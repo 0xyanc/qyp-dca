@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const Create = () => {
     const [isTotal, setIsTotal] = useState(false)
@@ -6,20 +6,27 @@ export const Create = () => {
     const [nbOrder, setNbOrder] = useState(0)
     const [frequency, setFrequency] = useState('0')
 
+    useEffect(() => {
+        console.log(`amount: ${amount}, isTotal: ${isTotal}, nbOrder: ${nbOrder}, frequency:${frequency}`
+        )
+    }, [amount, isTotal, nbOrder, frequency])
+
+
     const handleFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value)
+        setFrequency(event.target.value)
     }
 
-    const handleCustomFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFrequency(event.target.value);
+    const handleTotal = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const isTrue = (event.target.value === 'true');
+        setIsTotal(isTrue)
     }
+
 
     const handleAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(amount)
         const updatedAmount = parseInt(event.target.value)
         setAmount(updatedAmount)
     }
-
-
 
     return (
         <div className="mx-auto flex font-mono text-white">
@@ -27,7 +34,7 @@ export const Create = () => {
                 <div className="subcard">
                     sell USDC for ETH
                 </div>
-                <div className="flex mx-auto gap-9" onChange={setIsTotal(event.target.value)}>
+                <div className="flex mx-auto gap-9" onChange={handleTotal}>
                     <div className="flex gap-2">
                         <input type="radio" name="invest" value="true" />
                         <label>Total Investment</label>
