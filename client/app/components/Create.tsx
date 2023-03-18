@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 export const Create = () => {
     const [isTotal, setIsTotal] = useState(false)
@@ -19,13 +19,15 @@ export const Create = () => {
         setAmount(updatedAmount)
     }
 
+
+
     return (
         <div className="mx-auto flex font-mono text-white">
             <div className="flex flex-col gap-2 border-2 rounded-lg p-2">
                 <div className="subcard">
                     sell USDC for ETH
                 </div>
-                <div className="flex mx-auto gap-9">
+                <div className="flex mx-auto gap-9" onChange={setIsTotal(event.target.value)}>
                     <div className="flex gap-2">
                         <input type="radio" name="invest" value="true" />
                         <label>Total Investment</label>
@@ -70,7 +72,7 @@ export const Create = () => {
                                 type="text"
                                 id="frequency"
                                 name="frequency"
-                                onChange={handleCustomFrequency}
+                                onChange={event => { setFrequency(event.target.value) }}
                                 value={frequency}
                             />
                             days
