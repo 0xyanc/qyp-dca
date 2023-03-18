@@ -16,8 +16,16 @@
     }
 
     .non-active-tab:hover {
-        @apply opacity-100
-    }    
+        @apply opacity-100;
+    }
+
+    .subcard {
+        @apply bg-slate-900 border-2 rounded-lg p-2;
+    }
+
+    .subcard-old {
+        @apply bg-gradient-to-r from-indigo-600 to-pink-500 border-4 rounded-lg;
+    }
 
 
 
