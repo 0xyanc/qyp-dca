@@ -7,7 +7,7 @@ export const Tab = ({ create, setCreate }:
     }) => {
 
     return (
-        <div className="mx-auto mt-4  rounded">
+        <div className="mx-auto mt-4 mb-4 rounded">
             <ul id="tabs" className="inline-flex w-full px-1 pt-2 ">
                 <li
                     className={create ? "active-tab" : "non-active-tab"}

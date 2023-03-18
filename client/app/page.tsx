@@ -31,7 +31,7 @@ const wagmiClient = createClient({
 
 
 const Home = () => {
-  const [create, setCreate] = useState(false)
+  const [create, setCreate] = useState(true)
 
   return (
     <WagmiConfig client={wagmiClient}>
