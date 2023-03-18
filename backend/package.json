@@ -1,8 +1,8 @@
 {
-  "name": "qyp-dca-backend",
+  "name": "qyp-dca",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "0xyanc",
+  "author": "QYP",
   "license": "MIT",
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
@@ -14,19 +14,16 @@
     "@nomiclabs/hardhat-etherscan": "^3.0.0",
     "@typechain/ethers-v5": "^10.1.0",
     "@typechain/hardhat": "^6.1.2",
-    "@types/chai": "^4.2.0",
-    "@types/mocha": ">=9.1.0",
-    "@types/node": ">=12.0.0",
     "chai": "^4.2.0",
-    "ethers": "5.7.2",
+    "ethers": "^6.1.0",
     "hardhat": "^2.13.0",
     "hardhat-gas-reporter": "^1.0.8",
     "solidity-coverage": "^0.8.0",
-    "ts-node": ">=8.0.0",
-    "typechain": "^8.1.0",
-    "typescript": ">=4.5.0"
+    "typechain": "^8.1.0"
   },
   "dependencies": {
+    "@gridexprotocol/core": "^1.0.3",
+    "@openzeppelin/contracts": "^4.8.2",
     "dotenv": "^16.0.3",
     "hardhat-deploy": "^0.11.25"
   }

@@ -27,9 +27,10 @@
         @apply bg-gradient-to-r from-indigo-600 to-pink-500 border-4 rounded-lg;
     }
 
-
-
-
-
   }
 
+td, th{
+    border : 1px solid white;
+    text-align: center;
+    padding: 5px;
+}
