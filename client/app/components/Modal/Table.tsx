@@ -4,10 +4,10 @@ function Table({ OpenModalTable, setOpenModalTable}: {OpenModalTable :boolean, s
 
     if (!OpenModalTable) return null;
     return(
-        <div className="w-3/4 h-3/4 fixed inset-0 m-auto bg-black">
+        <div className="w-3/4 h-3/4 fixed inset-0 m-auto bg-slate-900 rounded-xl shadow-xl">
             <p className='text-right mr-5 mt-3' onClick={() => setOpenModalTable(false)}>X</p>
             <h1 className="text-center text-3xl">Total : + 200 $</h1>
-            <table className="border-solid border-black border-2 border-white">
+            <table className="border-solid border-2 border-white w-3/4 m-auto mt-10">
                 <tr>
                     <th>Date</th>
                     <th>Prix d&apos;achat</th>

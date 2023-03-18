@@ -18,7 +18,8 @@ export const Position = () => {
                     <p>Amount per period : 100$</p>
                     <p>Number of period : 12</p>
                     <div className="mt-5 bg-black h-2.5"><div className="w-5/12 bg-white h-2.5"> </div></div>
-                </div> 
+                    <Table OpenModalTable={OpenModalTable} setOpenModalTable={setOpenModalTable} />
+                </div>
                 <div className="text-white border-solid border-black border-2 border-white p-3 rounded-xl m-10 w-64" onClick={toggleTable}>
                     <h1 className="text-center text-3xl mb-3">USDT --{'>'} GDX</h1>
                     <p>Period time : 10 days</p>
@@ -34,7 +35,6 @@ export const Position = () => {
                     <div className="mt-5 bg-black h-2.5"><div className="w-12/12 bg-white h-2.5"> </div></div>
                 </div>
             </div>
-            <Table OpenModalTable={OpenModalTable} setOpenModalTable={setOpenModalTable}/>
 
 
         </div>
