@@ -6,13 +6,17 @@ function Table({ OpenModalTable, setOpenModalTable}: {OpenModalTable :boolean, s
     return(
         <div className="w-3/4 h-3/4 fixed inset-0 m-auto bg-slate-700 rounded-xl">
             <p className='text-right mr-5 mt-3 cursor-pointer' onClick={() => setOpenModalTable(false)}>X</p>
-            <h1 className="text-center text-3xl">Total : + 200 $</h1>
-            <table className="border-solid border-2 border-white w-3/4 m-auto mt-10">
+            <div className='text-center'>
+                <h1 className="text-3xl mb-5">Total : +200 $</h1>
+                <p>Amount per period : 75$</p>
+            </div>
+            <div className='h-96 overflow-y-auto w-3/4 m-auto mt-3'>
+            <table className="border-solid border-2 border-white w-full m-auto">
                 <tr>
                     <th>Date</th>
-                    <th>Prix d&apos;achat</th>
-                    <th>Plus-value</th>
-                    <th>État</th>
+                    <th>Purchase price</th>
+                    <th>Profit / Loss</th>
+                    <th>Status</th>
                 </tr>
                 <tr>
                     <td>15/03/2023</td>
@@ -57,6 +61,7 @@ function Table({ OpenModalTable, setOpenModalTable}: {OpenModalTable :boolean, s
                     <td>X</td>
                 </tr>
             </table>
+            </div>
         </div>
     )
 }
