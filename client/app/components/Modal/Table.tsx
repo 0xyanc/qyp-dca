@@ -10,7 +10,7 @@ function Table({ OpenModalTable, setOpenModalTable}: {OpenModalTable :boolean, s
             <table className="border-solid border-black border-2 border-white">
                 <tr>
                     <th>Date</th>
-                    <th>Prix d'achat</th>
+                    <th>Prix d&apos;achat</th>
                     <th>Plus-value</th>
                     <th>État</th>
                 </tr>
