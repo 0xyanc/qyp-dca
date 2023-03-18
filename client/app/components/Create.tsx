@@ -1,7 +1,7 @@
 export const Create = () => {
     return (
         <>
-            <div className="my-auto flex font-mono text-white text-5xl">
+            <div className="mx-auto flex font-mono text-white text-5xl">
                 <div className="flex flex-col gap-2 border-4 rounded-lg p-2">
                     <div className="border-4 rounded-lg">SELL USDC RECEIVE  ETH</div>
                     <div className="border-4 rounded-lg flex">HOW MUCH

@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .active-tab {
+      @apply px-4 py-2 -mb-px font-semibold border-b-2 border-blue-400 rounded-t opacity-50 cursor-pointer;
+    }
+
+    .active-tab:hover {
+        @apply opacity-100
+    }
+
+    .non-active-tab {
+        @apply px-4 py-2 font-semibold rounded-t opacity-50 cursor-pointer;
+    }
+
+    .non-active-tab:hover {
+        @apply opacity-100
+    }    
+
+
+
+
+
+  }
+

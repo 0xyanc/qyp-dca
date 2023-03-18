@@ -1,6 +1,6 @@
 'use client'
 
-import { Header, Create, Footer, Position } from './components'
+import { Header, Create, Footer, Position, Tab } from './components'
 import {
   getDefaultWallets,
   RainbowKitProvider,
@@ -44,9 +44,9 @@ const Home = () => {
           overlayBlur: 'small',
         })}
         chains={chains}>
-        <main className='h-screen w-screen flex justify-center bg-slate-800'>
-          <Header create={create} setCreate={setCreate} />
-
+        <main className='h-screen w-screen flex flex-col my-auto justify-center bg-slate-800 text-white'>
+          <Header />
+          <Tab create={create} setCreate={setCreate} />
           {create &&
             <Create />
           }
