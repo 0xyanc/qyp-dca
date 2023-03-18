@@ -10,7 +10,7 @@ export const Create = () => {
     const [price, setPrice] = useState('0')
 
     useEffect(() => {
-        console.log(`amount: ${amount}, isTotal: ${isTotal}, nbOrder: ${nbOrder}, frequency:${frequency} nbOrder:${nbOrder}`
+        console.log(`amount: ${amount}, isTotal: ${isTotal}, nbOrder: ${nbOrder}, frequency:${frequency} nbOrder:${nbOrder} price:${price}`
         )
     }, [amount, isTotal, nbOrder, frequency, percentage, type, price])
 
@@ -138,8 +138,8 @@ export const Create = () => {
                             <input
                                 className="rounded w-10 text-black px-1 mr-1"
                                 type="text"
-                                id="frequency"
-                                name="frequency"
+                                id="percentage"
+                                name="percentage"
                                 onChange={event => {
                                     setPercentage(event.target.value)
                                 }}

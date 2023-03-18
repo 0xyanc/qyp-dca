@@ -6,11 +6,11 @@ export const Position = () => {
     const [OpenModalTable, setOpenModalTable] = useState(false);
     const [position, setPosition] = useState(false);
 
-    function toggleTable(){
+    function toggleTable() {
         setOpenModalTable(!OpenModalTable);
     }
 
-    if(!position) return (
+    if (!position) return (
         <div className="inline mt-5 w-10/12 m-auto overflow-auto pb-16">
             <div className='mt-10 text-center'>
                 <p className='text-3xl'>Aucun DCA</p>
@@ -18,7 +18,7 @@ export const Position = () => {
             </div>
         </div>
     );
-    if(position) return (
+    if (position) return (
         <div className="inline mt-5 w-10/12 m-auto overflow-auto pb-16">
             <div className="flex flex-wrap h-full overflow-auto">
 
@@ -44,7 +44,7 @@ export const Position = () => {
                     <p>Number of period : 24</p>
                     <div className="mt-5 bg-black h-2.5"><div className="w-12/12 bg-white h-2.5"> </div></div>
                 </div>
-                
+
             </div>
         </div>
     )
