@@ -88,6 +88,14 @@ contract QYP_DCA {
         uint256 amount1
     );
 
+    /**
+     * @notice Fired in submitDcaPosition() and submitScheduledOrder()
+     * @param user recipient of the order
+     * @param orderId id of the order
+     * @param amount amount of token for the order
+     */
+    event OrderSubmitted(address indexed user, uint256 orderId, uint256 amount);
+
     constructor(
         IMakerOrderManager _makerOrderManager,
         address _token0,
@@ -110,16 +118,16 @@ contract QYP_DCA {
      * @param _amountPerOrder amount to be invested by the user for each period
      * @param _frequency frequency to invest the user's fund
      * @param _numberOfOrders total number of orders
-     * @param tokenIn token to DCA in
+     * @param _tokenIn token to DCA in
      */
     function submitDcaPosition(
         uint256 _totalAmount,
         uint128 _amountPerOrder,
         uint256 _frequency,
         uint256 _numberOfOrders,
-        address tokenIn
+        address _tokenIn
     ) external {
-        if (tokenIn != token0 && tokenIn != token1) {
+        if (_tokenIn != token0 && _tokenIn != token1) {
             revert QYP_DCA__InvalidToken();
         }
         if (_totalAmount == 0 || _amountPerOrder == 0) {
@@ -134,21 +142,21 @@ contract QYP_DCA {
         // msg.sender MUST approve the contract to spend the input token
         // transfer the specified amount of tokenIn to this contract
         SafeERC20.safeTransferFrom(
-            IERC20(tokenIn),
+            IERC20(_tokenIn),
             msg.sender,
             address(this),
             _totalAmount
         );
 
-        // approve the maker order manager to spend tokenIn
-        SafeERC20.safeApprove(
-            IERC20(tokenIn),
+        // increase the allowance for the maker order manager to spend tokenIn
+        SafeERC20.safeIncreaseAllowance(
+            IERC20(_tokenIn),
             address(makerOrderManager),
             _totalAmount
         );
 
         (, int24 boundary, , ) = grid.slot0();
-        // for this example, we will place a maker order at the current lower boundary of the grid
+        // we will place a maker order at the current lower boundary of the grid which corresponds to the best to the current price
         int24 boundaryLower = BoundaryMath.getBoundaryLowerAtBoundary(
             boundary,
             RESOLUTION
@@ -162,7 +170,7 @@ contract QYP_DCA {
                 tokenA: token0,
                 tokenB: token1,
                 resolution: RESOLUTION,
-                zero: grid.token0() == tokenIn,
+                zero: grid.token0() == _tokenIn,
                 boundaryLower: boundaryLower,
                 amount: _amountPerOrder
             });
@@ -180,6 +188,7 @@ contract QYP_DCA {
         uint256 length = usersPositions[msg.sender].length;
         usersPositions[msg.sender][length - 1].orderIds.push(orderId);
 
+        // emit DcaSubmitted
         emit DcaSubmitted(
             msg.sender,
             _totalAmount,
@@ -188,29 +197,32 @@ contract QYP_DCA {
             _numberOfOrders,
             length - 1
         );
+        // emit OrderSubmitted event
+        emit OrderSubmitted(msg.sender, orderId, _amountPerOrder);
     }
 
     /**
      * @notice Withdraw funds from the DCA contract and transfer token0 and token1 back to the user.
      *         All orders might not have been filled, it will settle (i.e. cancel) all outstanding orders.
-     * @param dcaIndex The DCA position to settle
-     * @param unwrapWeth true to unwrap WETH
+     * @param _dcaIndex The DCA position to settle
+     * @param _unwrapWeth true to unwrap WETH
      */
-    function withdrawFunds(uint256 dcaIndex, bool unwrapWeth) external {
+    function withdrawFunds(uint256 _dcaIndex, bool _unwrapWeth) external {
         if (usersPositions[msg.sender].length == 0) {
             revert QYP_DCA__NoDcaPosition();
         }
-        if (dcaIndex >= usersPositions[msg.sender].length) {
+        if (_dcaIndex >= usersPositions[msg.sender].length) {
             revert QYP_DCA__InvalidDcaIndex();
         }
-        uint256[] memory orderIds = usersPositions[msg.sender][dcaIndex]
+        uint256[] memory orderIds = usersPositions[msg.sender][_dcaIndex]
             .orderIds;
         (uint128 amount0Total, uint128 amount1Total) = grid
             .settleMakerOrderAndCollectInBatch(
                 msg.sender,
                 orderIds,
-                unwrapWeth
+                _unwrapWeth
             );
+        // emit FundsWithdrawn event
         emit FundsWithdrawn(
             msg.sender,
             token0,
@@ -222,20 +234,20 @@ contract QYP_DCA {
 
     /**
      * @notice Show all orders info from a specific DCA positions of a user
-     * @param user address of the user to show positions from
-     * @param dcaIndex index of the DCA position to get orders from
+     * @param _user address of the user to show positions from
+     * @param _dcaIndex index of the DCA position to get orders from
      */
     function showDcaInfo(
-        address user,
-        uint256 dcaIndex
+        address _user,
+        uint256 _dcaIndex
     ) external view returns (Order[] memory) {
         Order[] memory orders;
         // user has no DCA position
-        if (usersPositions[user].length == 0) return orders;
+        if (usersPositions[_user].length == 0) return orders;
         // dca index does not exist
-        if (dcaIndex >= usersPositions[msg.sender].length) return orders;
+        if (_dcaIndex >= usersPositions[msg.sender].length) return orders;
         // loop through all the orderss of this DCA position
-        uint256[] storage orderIds = usersPositions[msg.sender][dcaIndex]
+        uint256[] storage orderIds = usersPositions[msg.sender][_dcaIndex]
             .orderIds;
 
         for (uint256 i = 0; i < orderIds.length; ++i) {
@@ -264,5 +276,46 @@ contract QYP_DCA {
         return orders;
     }
 
-    // function that will be called to submit future orders
+    /**
+     * @notice Called by Gelato to submit a maker order for the recipient
+     * @param _recipient user that will receive the tokens
+     * @param _amountPerOrder amount of tokenIn for the order
+     * @param _tokenIn token to DCA in
+     * @param _dcaIndex DCA position where the scheduled order originated from
+     */
+    function submitScheduledOrder(
+        address _recipient,
+        uint128 _amountPerOrder,
+        address _tokenIn,
+        uint256 _dcaIndex
+    ) external {
+        (, int24 boundary, , ) = grid.slot0();
+        // we will place a maker order at the current lower boundary of the grid which corresponds to the best to the current price
+        int24 boundaryLower = BoundaryMath.getBoundaryLowerAtBoundary(
+            boundary,
+            RESOLUTION
+        );
+
+        // build the parameters before placing the order
+        IMakerOrderManager.PlaceOrderParameters
+            memory parameters = IMakerOrderManager.PlaceOrderParameters({
+                deadline: block.timestamp,
+                recipient: _recipient,
+                tokenA: token0,
+                tokenB: token1,
+                resolution: RESOLUTION,
+                zero: grid.token0() == _tokenIn,
+                boundaryLower: boundaryLower,
+                amount: _amountPerOrder
+            });
+
+        // call the Grid to place the order
+        uint256 orderId = makerOrderManager.placeMakerOrder(parameters);
+
+        // add the orderId to the array of the user's specific DCA position
+        usersPositions[msg.sender][_dcaIndex].orderIds.push(orderId);
+
+        // emit OrderSubmitted event
+        emit OrderSubmitted(_recipient, orderId, _amountPerOrder);
+    }
 }
