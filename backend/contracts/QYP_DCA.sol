@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interfaces/IMakerOrderManager.sol";
 import "@gridexprotocol/core/contracts/interfaces/IGrid.sol";
+import "@gridexprotocol/core/contracts/interfaces/IGridEvents.sol";
 import "@gridexprotocol/core/contracts/libraries/GridAddress.sol";
 import "@gridexprotocol/core/contracts/libraries/BoundaryMath.sol";
 
@@ -127,11 +128,9 @@ contract QYP_DCA {
         position.amountPerOrder = _amountPerOrder;
         position.frequency = _frequency;
         position.numberOfOrders = _numberOfOrders;
-        uint256[] memory orderIds;
-        orderIds[0] = orderId;
-        position.orderIds = orderIds;
-        // Add the position to the user mapping
         usersPositions[msg.sender].push(position);
+        uint256 length = usersPositions[msg.sender].length;
+        usersPositions[msg.sender][length - 1].orderIds.push(orderId);
 
         emit DcaSubmitted(
             msg.sender,

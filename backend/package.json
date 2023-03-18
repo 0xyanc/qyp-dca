@@ -15,7 +15,7 @@
     "@typechain/ethers-v5": "^10.1.0",
     "@typechain/hardhat": "^6.1.2",
     "chai": "^4.2.0",
-    "ethers": "^6.1.0",
+    "ethers": "5.7.2",
     "hardhat": "^2.13.0",
     "hardhat-gas-reporter": "^1.0.8",
     "solidity-coverage": "^0.8.0",
@@ -24,6 +24,7 @@
   "dependencies": {
     "@gridexprotocol/core": "^1.0.3",
     "@openzeppelin/contracts": "^4.8.2",
+    "@openzeppelin/contracts-upgradeable": "^4.8.2",
     "dotenv": "^16.0.3",
     "hardhat-deploy": "^0.11.25"
   }

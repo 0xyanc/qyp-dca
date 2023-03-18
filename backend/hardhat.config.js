@@ -39,10 +39,10 @@ module.exports = {
         version: "0.8.18"
       },
       {
-        version: "0.6.2"
+        version: "0.6.11"
       },
       {
-        version: "0.5.0"
+        version: "0.8.9"
       }
     ]
   },
@@ -56,7 +56,7 @@ module.exports = {
       default: 0,
       1: 0,
     },
-    staker: {
+    investor: {
       default: 1,
       1: 1,
     },
