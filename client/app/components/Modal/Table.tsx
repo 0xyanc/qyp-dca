@@ -1,5 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 
+import Image from 'next/image';
+import fleche from '../../../public/fleche.png'
+
+import USDC from './../Coin/usdc'
+import WETH from './../Coin/weth'
+
 function Table({ OpenModalTable, setOpenModalTable}: {OpenModalTable :boolean, setOpenModalTable: Dispatch<SetStateAction<boolean>>}) {
 
     if (!OpenModalTable) return null;
@@ -8,6 +14,7 @@ function Table({ OpenModalTable, setOpenModalTable}: {OpenModalTable :boolean, s
             <p className='text-right mr-5 mt-3 cursor-pointer' onClick={() => setOpenModalTable(false)}>X</p>
             <div className='text-center'>
                 <h1 className="text-3xl mb-5">Total : +200 $</h1>
+                <h2 className="flex justify-center text-xl mb-1"><USDC></USDC> <Image src={fleche} alt="fleche icon" height={20}/> <WETH></WETH></h2>
                 <p>Amount per period : 75$</p>
             </div>
             <div className='h-96 overflow-y-auto w-3/4 m-auto mt-3'>

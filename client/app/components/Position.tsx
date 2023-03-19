@@ -1,6 +1,12 @@
 import { useState } from 'react';
 
+import Image from 'next/image';
+import fleche from '../../public/fleche.png'
+
 import Table from './Modal/Table';
+
+import USDC from './Coin/usdc'
+import WETH from './Coin/weth'
 
 export const Position = () => {
     const [OpenModalTable, setOpenModalTable] = useState(false);
@@ -14,23 +20,23 @@ export const Position = () => {
         <div className="inline mt-5 w-10/12 m-auto overflow-auto pb-16 font-mono">
             {position &&
                 <div className="flex flex-wrap h-full overflow-auto">
-                    <div className="text-white border-solid border-2 border-white p-3 rounded-xl m-5 w-64 cursor-pointer hover:bg-slate-700" onClick={toggleTable}>
-                        <h1 className="text-center text-3xl mb-3">USDT --{'>'} WETH</h1>
+                    <div className="text-white border-solid border-2 border-white p-3 rounded-xl m-5 cursor-pointer hover:bg-slate-700" onClick={toggleTable}>
+                        <h1 className="flex text-center text-3xl mb-3"><USDC></USDC> <Image src={fleche} alt="fleche icon" height={40}/> <WETH></WETH></h1>
                         <p>Period time : 1 month</p>
                         <p>Amount per period : 100$</p>
                         <p>Number of period : 12</p>
                         <div className="mt-5 bg-black h-2.5"><div className="w-5/12 bg-white h-2.5"> </div></div>
                         <Table OpenModalTable={OpenModalTable} setOpenModalTable={setOpenModalTable} />
                     </div>
-                    <div className="text-white border-solid border-2 border-white p-3 rounded-xl m-5 w-64 cursor-pointer hover:bg-slate-700" onClick={toggleTable}>
-                        <h1 className="text-center text-3xl mb-3">USDT --{'>'} GDX</h1>
+                    <div className="text-white border-solid border-2 border-white p-3 rounded-xl m-5 cursor-pointer hover:bg-slate-700" onClick={toggleTable}>
+                        <h1 className="flex text-center text-3xl mb-3"><USDC></USDC> <Image src={fleche} alt="fleche icon" height={40}/> <WETH></WETH></h1>
                         <p>Period time : 10 days</p>
                         <p>Amount per period : 150$</p>
                         <p>Number of period : 5</p>
                         <div className="mt-5 bg-black h-2.5"><div className="w-8/12 bg-white h-2.5"> </div></div>
                     </div>
-                    <div className="text-white border-solid border-2 border-white p-3 rounded-xl m-5 w-64 cursor-pointer hover:bg-slate-700" onClick={toggleTable}>
-                        <h1 className="text-center text-3xl mb-3">GDX --{'>'} WETH</h1>
+                    <div className="text-white border-solid border-2 border-white p-3 rounded-xl m-5 cursor-pointer hover:bg-slate-700" onClick={toggleTable}>
+                        <h1 className="flex text-center text-3xl mb-3"><WETH></WETH> <Image src={fleche} alt="fleche icon" height={40}/> <USDC></USDC></h1>
                         <p>Period time : 1 week</p>
                         <p>Amount per period : 75$</p>
                         <p>Number of period : 24</p>

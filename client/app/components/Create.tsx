@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 
 import Image from 'next/image';
-import ethereum_logo from '../../public/ethereum-eth-logo.svg'
-import usd_coin_logo from '../../public/usd-coin-usdc-logo.svg'
 import change_icon from '../../public/change.png'
-import { stringify } from "querystring";
+import fleche from '../../public/fleche.png'
+
+import USDC from './Coin/usdc'
+import WETH from './Coin/weth'
 
 export const Create = () => {
     const [isTotal, setIsTotal] = useState(false)
@@ -58,18 +59,18 @@ export const Create = () => {
                 {chosenCoin &&
                     <div className="subcard flex flex-row">
                         Buy 
-                        <div className="flex mr-5"><Image src={usd_coin_logo} alt="usd coin logo" height={20} className="ml-4 mr-2"/> USDC</div>
+                        <USDC></USDC>
                         with
-                        <div className="flex mr-5"><Image src={ethereum_logo} alt="ethereum logo" height={20} className="ml-4 mr-2"/> WETH</div>
+                        <WETH></WETH>
                         <p onClick={() => setChosenCoin(!chosenCoin)} className="cursor-pointer"><Image src={change_icon} alt="change icon" height={20} className="ml-8"/></p>
                     </div>
                 }
                 {!chosenCoin &&
                     <div className="subcard flex flex-row">
                         Buy 
-                        <div className="flex mr-5"><Image src={ethereum_logo} alt="ethereum logo" height={20} className="ml-4 mr-2"/> WETH</div>
+                        <WETH></WETH>
                         with
-                        <div className="flex mr-5"><Image src={usd_coin_logo} alt="usd coin logo" height={20} className="ml-4 mr-2"/> USDC</div>
+                        <USDC></USDC>
                         <p onClick={() => setChosenCoin(!chosenCoin)} className="cursor-pointer"><Image src={change_icon} alt="change icon" height={20} className="ml-8"/></p>
                     </div>
                 }
@@ -85,23 +86,23 @@ export const Create = () => {
                 </div>
                 <div className="subcard">
                     <div className="flex flex-col">
-                        <p>Amount</p>
+                        <p className="text-l ml-5 underline mb-1">Amount</p>
                         <div className="flex gap-1">
                             <input
-                                className="w-20 rounded text-black px-1"
+                                className="w-20 rounded text-black px-1 ml-5"
                                 type="text"
                                 id="amount"
                                 name="amount"
                                 onChange={(event) => { setAmount(event.target.value) }}
                             />
-                            {chosenCoin && <p>WETH</p>}
-                            {!chosenCoin && <p>USDC</p>}
+                            {chosenCoin && <WETH></WETH>}
+                            {!chosenCoin && <USDC></USDC>}
                         </div>
                     </div>
                 </div>
 
                 <div className="subcard" onChange={handleFrequency}>
-                    <p>Frequency</p>
+                    <p className="text-l ml-5 underline">Frequency</p>
                     <div className="flex mx-auto gap-4">
                         <div className="flex gap-1">
                             <input type="radio" name="frequence" value={'30'}  checked={frequency === '30'}/>
@@ -131,7 +132,7 @@ export const Create = () => {
                 </div>
 
                 <div className="subcard" onChange={handleNbOrder}>
-                    <p>Duration</p>
+                    <p className="text-l ml-5 underline">Duration</p>
                     <div className="flex mx-auto gap-4">
                         <div className="flex gap-1">
                             <input type="radio" name="duration" value={7}  checked={nbOrder === '7'}/>
@@ -163,7 +164,7 @@ export const Create = () => {
                 </div>
 
                 <div className="subcard">
-                    <p>Type of order</p>
+                    <p className="text-l ml-5 underline">Type of order</p>
                     <div className="flex gap-1">
                         <input type="radio" name="type" value={"market"} onClick={() => setType("market")} checked={type === 'market'}/>
                         <label>Market Price</label>
@@ -218,12 +219,12 @@ export const Create = () => {
 
             <div className="my-auto">
                 <h1 className="text-3xl text-center mb-7">Preview</h1>
-                <div className="text-white border-solid border-2 border-white p-3 rounded-xl m-5 w-64 cursor-pointer bg-slate-700 h-min">
+                <div className="text-white border-solid border-2 border-white p-3 rounded-xl m-5 cursor-pointer bg-slate-700 h-min">
                     {chosenCoin &&
-                        <h1 className="text-center text-3xl mb-3">WETH --{'>'} USDT</h1>
+                        <h1 className="text-center text-3xl mb-3 flex"><WETH></WETH> <Image src={fleche} alt="fleche icon" height={40}/> <USDC></USDC></h1>
                     }
                     {!chosenCoin &&
-                        <h1 className="text-center text-3xl mb-3">USDT --{'>'} WETH</h1>
+                        <h1 className="text-center text-3xl mb-3 flex"><USDC></USDC> <Image src={fleche} alt="fleche icon" height={40}/> <WETH></WETH></h1>
                     }
                     <p>Period time : {frequency} days</p>
                     {chosenCoin && <p>Amount per period : {periodAmount} WETH</p>}

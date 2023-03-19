@@ -12,7 +12,7 @@ export const Tab = ({ create, setCreate }:
                 <li
                     className={create ? "active-tab" : "non-active-tab"}
                     onClick={() => setCreate(true)}
-                > Create Position</li>
+                > Create DCA</li>
                 <li
                     className={!create ? "active-tab" : "non-active-tab"}
                     onClick={() => setCreate(false)}
