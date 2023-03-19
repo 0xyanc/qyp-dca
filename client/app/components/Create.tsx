@@ -25,12 +25,13 @@ export const Create = () => {
     const [nbOrder, setNbOrder] = useState('7')
     const [frequency, setFrequency] = useState('30')
     const [percentage, setPercentage] = useState('0')
-    const [type, setType] = useState('market')
+    const [openPercent, setOpenPercent] = useState(false)
     const [price, setPrice] = useState('0')
     const [chosenCoin, setChosenCoin] = useState(true);
     const { address, isConnected } = useAccount()
     const [wethBalance, setWethBalance] = useState(0)
     const [usdcBalance, setUsdcBalance] = useState(0)
+    const [errorPercent, setErrorPercent] = useState("")
 
     const { data } = useContractReads({
         contracts: [
@@ -85,6 +86,14 @@ export const Create = () => {
         args: [SmartContract, ethers.constants.MaxUint256]
     })
     const { write:write_WETH } = useContractWrite(config_WETH)
+
+    const { config } = usePrepareContractWrite({
+        address: SmartContract,
+        abi: ABI_QYP,
+        functionName: 'submitDcaPosition',
+        args: [(parseInt(periodAmount)*parseInt(nbOrder)), periodAmount, frequency, nbOrder, chosenCoin, percentage]
+    })
+    const { write } = useContractWrite(config)
     
     useEffect(() => {
         calculAmount();
@@ -103,8 +112,18 @@ export const Create = () => {
         setNbOrder(event.target.value)
     }
 
-    const handleType = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setType(event.target.value)
+    function handleOpenPercent(){
+        setOpenPercent(!openPercent);
+    }
+
+    function verifPercentage(event: React.ChangeEvent<HTMLInputElement>){
+        if(parseInt(event.target.value) > 0 && parseInt(event.target.value) < 100){
+            setPercentage(event.target.value);
+            setErrorPercent("");
+        }
+        else{
+            setErrorPercent("Please enter a number between 0 and 100");
+        }
     }
 
     const calculAmount = () => {
@@ -255,29 +274,32 @@ export const Create = () => {
                 <div className="subcard">
                     <p className="text-l ml-5 underline">Type of order</p>
                     <div className="flex gap-1">
-                        <input type="radio" name="type" value={"market"} onClick={() => setType("market")} defaultChecked />
+                        <input type="radio" name="type" value={'0'} onClick={() => setPercentage('0')}  onChange={handleOpenPercent} defaultChecked />
                         <label>Market Price</label>
                     </div>
-                    {type === "market" &&
+                    {!openPercent &&
                         <div>Price: 1600 USDC</div>
                     }
                     <div className="flex gap-1">
-                        <input type="radio" name="type" value={"percentage"} onClick={() => setType("percentage")} />
+                        <input type="radio" name="type" value={"percentage"} onChange={handleOpenPercent}/>
                         <label>Percentage below market price</label>
                     </div>
-                    {type === "percentage" &&
-                        <div className="flex">
+                    {openPercent &&
+                    <div>
+                        <div className="flex">- 
                             <input
-                                className="rounded w-10 text-black px-1 mr-1"
+                                className="rounded w-10 text-black px-1 mr-1 ml-1"
                                 type="text"
                                 id="percentage"
                                 name="percentage"
                                 onChange={event => {
-                                    setPercentage(event.target.value)
+                                    verifPercentage(event)
                                 }}
                                 value={percentage}
                             />
-                            <div>%  Price : {1600 * (1 - (parseInt(percentage) / 100))}</div>
+                            <div>%  Price : {new Intl.NumberFormat('en-US', { maximumSignificantDigits: 5 }).format(1600 * (1 - (parseInt(percentage) / 100)))}</div>
+                        </div>
+                        <p className="text-xs text-red-400">{errorPercent}</p>
                         </div>
                     }
                     {/* <div className="flex gap-1">
@@ -328,7 +350,7 @@ export const Create = () => {
                         <div className="mx-auto py-2 px-4 bg-gray-600 rounded-lg">
                             Approve
                         </div>
-                        <button className="mx-auto py-2 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg" onClick={write_WETH}>
+                        <button className="mx-auto py-2 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg" onClick={write}>
                             Submit
                         </button>
                     </div>
@@ -338,7 +360,7 @@ export const Create = () => {
                     <div className="mx-auto py-2 px-4 bg-gray-600 rounded-lg">
                         Approve
                     </div>
-                    <button className="mx-auto py-2 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg" onClick={write_USDC}>
+                    <button className="mx-auto py-2 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg" onClick={write}>
                         Submit
                     </button>
                     </div>
@@ -358,6 +380,9 @@ export const Create = () => {
                     {chosenCoin && <p>Amount per period : {periodAmount} WETH</p>}
                     {!chosenCoin && <p>Amount per period : {periodAmount} USDC</p>}
                     <p>Number of period : {nbOrder}</p>
+
+                    {chosenCoin && <p className="text-xl mt-5">Total invest : {new Intl.NumberFormat('en-US', { maximumSignificantDigits: 5 }).format((parseFloat(periodAmount) * parseFloat(nbOrder)))} WETH</p>}
+                    {!chosenCoin && <p className="text-xl mt-5">Total invest : {new Intl.NumberFormat('en-US', { maximumSignificantDigits: 5 }).format((parseInt(periodAmount) * parseFloat(nbOrder)))} USDC</p>}
                 </div>
             </div>
         </div >
