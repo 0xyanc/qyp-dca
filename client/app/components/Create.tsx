@@ -29,6 +29,8 @@ export const Create = () => {
     const [price, setPrice] = useState('0')
     const [chosenCoin, setChosenCoin] = useState(true);
     const { address, isConnected } = useAccount()
+    const [wethBalance, setWethBalance] = useState(0)
+    const [usdcBalance, setUsdcBalance] = useState(0)
 
     const { data } = useContractReads({
         contracts: [
@@ -51,7 +53,7 @@ export const Create = () => {
                 args: [address!, SmartContract]
             },
             {
-                address: WETH_Goerli,
+                address: USDC_Goerli,
                 abi: erc20ABI,
                 functionName: 'allowance',
                 args: [address!, SmartContract]
@@ -60,10 +62,11 @@ export const Create = () => {
         onSuccess(data) {
           setWethAllowance(data[2]);
           setUsdcAllowance(data[3]);
+          setUsdcBalance(parseInt(data[0]._hex.toString()) / 10 ** 6);
+          setWethBalance(parseInt(data[1]._hex.toString()) / 10 ** 18);
         },
     })
 
-<<<<<<< HEAD
     const [wethAllowance, setWethAllowance] = useState(BigNumber.from(0))
     const [usdcAllowance, setUsdcAllowance] = useState(BigNumber.from(0))
     
@@ -83,12 +86,6 @@ export const Create = () => {
     })
     const { write:write_WETH } = useContractWrite(config_WETH)
     
-    useEffect(() => {
-        console.log(`periodAmount: ${periodAmount}, isTotal: ${isTotal}, nbOrder: ${nbOrder}, frequency:${frequency} nbOrder:${nbOrder} price:${price}`)
-    }, [amount, isTotal, nbOrder, frequency, percentage, type, price])
-
-=======
->>>>>>> d4e53c802ae87142ca6d032ae0e119d5ff5b7925
     useEffect(() => {
         calculAmount();
     }, [amount, isTotal, nbOrder])
@@ -166,26 +163,25 @@ export const Create = () => {
                             {chosenCoin && <WETH></WETH>}
                             {!chosenCoin && <USDC></USDC>}
                         </div>
-                        {isConnected && !data && <p>NO COIN</p>}
-                        {isConnected && chosenCoin && data &&
+                        {isConnected && chosenCoin && wethBalance > 0 &&
                             <div>
-                                <p className="text-xs text-right">MAX : {parseInt(data[1].toString()) / 10 ** 18}</p>
+                                <p className="text-xs text-right">MAX : {wethBalance}</p>
                                 <input
                                     className="w-full"
                                     type="range"
                                     id="amount_range"
-                                    onChange={(event) => { setAmount(((parseInt(data[1].toString()) / 10 ** 18) * (parseInt(event.target.value) / 100)).toString()) }}
+                                    onChange={(event) => { setAmount((wethBalance * (parseInt(event.target.value) / 100)).toString()) }}
                                 />
                             </div>
                         }
-                        {isConnected && !chosenCoin && data &&
+                        {isConnected && !chosenCoin && usdcBalance &&
                             <div>
-                                <p className="text-xs text-right">MAX : {parseInt(data[0].toString()) / 10 ** 6}</p>
+                                <p className="text-xs text-right">MAX : {usdcBalance}</p>
                                 <input
                                     className="w-full"
                                     type="range"
                                     id="amount_range"
-                                    onChange={(event) => { setAmount(((parseInt(data[0].toString()) / 10 ** 6) * (parseInt(event.target.value) / 100)).toString()) }}
+                                    onChange={(event) => { setAmount((usdcBalance * (parseInt(event.target.value) / 100)).toString()) }}
                                 />
                             </div>
                         }
@@ -284,7 +280,7 @@ export const Create = () => {
                             <div>%  Price : {1600 * (1 - (parseInt(percentage) / 100))}</div>
                         </div>
                     }
-                    <div className="flex gap-1">
+                    {/* <div className="flex gap-1">
                         <input type="radio" name="type" value={"fixed"} onClick={() => setType("fixed")} />
                         <label>Fixed Price</label>
                     </div>
@@ -303,9 +299,9 @@ export const Create = () => {
                             />
                             <p>USDC</p>
                         </div>
-                    }
+                    } */}
                 </div>
-                {chosenCoin && wethAllowance >= BigNumber.from(0) &&
+                {chosenCoin && wethAllowance <= BigNumber.from(0) &&
                     <div className="flex w-3/4 m-auto">
                         <button className="mx-auto py-2 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg" onClick={write_WETH}>
                             Approve
@@ -315,7 +311,7 @@ export const Create = () => {
                         </div>
                     </div>
                 }
-                {!chosenCoin && usdcAllowance >= BigNumber.from(0) &&
+                {!chosenCoin && usdcAllowance <= BigNumber.from(0) &&
                     <div className="flex w-3/4 m-auto">
                         <button className="mx-auto py-2 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg" onClick={write_USDC}>
                             Approve
@@ -327,7 +323,7 @@ export const Create = () => {
                 }
 
                 
-                {chosenCoin && wethAllowance < BigNumber.from(0) &&
+                {chosenCoin && wethAllowance > BigNumber.from(0) &&
                     <div className="flex w-3/4 m-auto">
                         <div className="mx-auto py-2 px-4 bg-gray-600 rounded-lg">
                             Approve
@@ -337,7 +333,7 @@ export const Create = () => {
                         </button>
                     </div>
                 }
-                {!chosenCoin && usdcAllowance < BigNumber.from(0) &&
+                {!chosenCoin && usdcAllowance > BigNumber.from(0) &&
                     <div className="flex w-3/4 m-auto">
                     <div className="mx-auto py-2 px-4 bg-gray-600 rounded-lg">
                         Approve
