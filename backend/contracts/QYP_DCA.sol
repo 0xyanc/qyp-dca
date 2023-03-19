@@ -171,10 +171,10 @@ contract QYP_DCA {
             RESOLUTION
         );
         // apply discount if exists
-        int24 discountedBoundary = calculateDiscount(
-            boundaryLower,
-            _percentageLower
-        );
+        // int24 discountedBoundary = calculateDiscount(
+        //     boundaryLower,
+        //     _percentageLower
+        // );
 
         // build the parameters before placing the order
         IMakerOrderManager.PlaceOrderParameters
@@ -185,7 +185,7 @@ contract QYP_DCA {
                 tokenB: token1,
                 resolution: RESOLUTION,
                 zero: grid.token0() == _tokenIn,
-                boundaryLower: discountedBoundary,
+                boundaryLower: boundaryLower,
                 amount: _amountPerOrder
             });
 
@@ -200,9 +200,9 @@ contract QYP_DCA {
         position.numberOfOrders = _numberOfOrders;
         position.owner = msg.sender;
         position.timestampLastSubmittedOrder = block.timestamp;
-        position.orderIds[0] = orderId;
 
         allDcaPositions.push(position);
+        allDcaPositions[allDcaPositions.length - 1].orderIds.push(orderId);
 
         // emit DcaSubmitted
         emit DcaSubmitted(
@@ -340,10 +340,10 @@ contract QYP_DCA {
         );
 
         // apply discount if exists
-        int24 discountedBoundary = calculateDiscount(
-            boundaryLower,
-            _percentageLower
-        );
+        // int24 discountedBoundary = calculateDiscount(
+        //     boundaryLower,
+        //     _percentageLower
+        // );
 
         // build the parameters before placing the order
         IMakerOrderManager.PlaceOrderParameters
@@ -354,7 +354,7 @@ contract QYP_DCA {
                 tokenB: token1,
                 resolution: RESOLUTION,
                 zero: grid.token0() == _tokenIn,
-                boundaryLower: discountedBoundary,
+                boundaryLower: boundaryLower,
                 amount: _amountPerOrder
             });
 

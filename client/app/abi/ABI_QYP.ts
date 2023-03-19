@@ -42,6 +42,11 @@ export const ABI_QYP = [
   },
   {
     inputs: [],
+    name: "QYP_DCA__InvalidPercentage",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "QYP_DCA__InvalidToken",
     type: "error",
   },

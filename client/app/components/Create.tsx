@@ -16,7 +16,7 @@ export const Create = () => {
   const USDC_Goerli: `0x${string}` = "0x65afadd39029741b3b8f0756952c74678c9cec93";
   const WETH_Goerli: `0x${string}` = "0xccb14936c2e000ed8393a571d15a2672537838ad";
 
-  const SmartContract = "0x04C89607413713Ec9775E14b954286519d836FEf";
+  const SmartContract: `0x${string}` = "0x04C89607413713Ec9775E14b954286519d836FEf";
 
   const [isTotal, setIsTotal] = useState(false);
   const [amount, setAmount] = useState("0");
@@ -79,19 +79,33 @@ export const Create = () => {
   const { write: write_USDC } = useContractWrite(config_USDC);
 
   const { config: config_WETH } = usePrepareContractWrite({
-    address: WETH_Goerli,
+    address: WETH9_address,
     abi: erc20ABI,
     functionName: "approve",
     args: [SmartContract, ethers.constants.MaxUint256],
   });
   const { write: write_WETH } = useContractWrite(config_WETH);
 
-  const { config } = usePrepareContractWrite({
+  const { config, isError } = usePrepareContractWrite({
     address: SmartContract,
     abi: ABI_QYP,
     functionName: "submitDcaPosition",
-    args: [parseInt(periodAmount) * parseInt(nbOrder), periodAmount, frequency, nbOrder, chosenCoin, percentage],
+    args: [
+      //   parseInt(periodAmount) * parseInt(nbOrder),
+      //   parseInt(periodAmount),
+      //   parseInt(frequency),
+      //   parseInt(nbOrder),
+      //   chosenCoin ? WETH9_address : USDC_address,
+      //   parseInt(percentage),
+      5,
+      1,
+      5,
+      5,
+      WETH9_address,
+      0,
+    ],
   });
+  console.log(isError);
   const { write } = useContractWrite(config);
 
   useEffect(() => {
