@@ -46,8 +46,8 @@ function Table({
                 <h2 className="flex justify-center text-xl mb-1">
                     <USDC></USDC> <Image src={fleche} alt="fleche icon" height={20} /> <WETH></WETH>
                 </h2>
-                <p>Amount per period: 100$</p>
-                <p>Remaining Orders: 9</p>
+                <p>Amount per period: 2$</p>
+                <p>Remaining Orders: 4</p>
             </div>
             <div className="h-96 overflow-y-auto w-3/4 m-auto mt-3">
                 <table className="border-solid border-2 border-white w-full m-auto mb-2">
@@ -61,7 +61,7 @@ function Table({
                     <tbody>
                         <tr>
                             <td>19/03/2023</td>
-                            <td>1500$</td>
+                            <td>1614$</td>
                             <td>V</td>
                         </tr>
                     </tbody>
