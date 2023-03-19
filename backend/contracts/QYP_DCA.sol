@@ -166,6 +166,8 @@ contract QYP_DCA {
             boundary,
             RESOLUTION
         );
+        // apply discount if exists
+        int24 discountedBoundary = calculateDiscount(boundaryLower,_percentageLower);
 
         // build the parameters before placing the order
         IMakerOrderManager.PlaceOrderParameters
@@ -176,7 +178,7 @@ contract QYP_DCA {
                 tokenB: token1,
                 resolution: RESOLUTION,
                 zero: grid.token0() == _tokenIn,
-                boundaryLower: boundaryLower,
+                boundaryLower: discountedBoundary,
                 amount: _amountPerOrder
             });
 
@@ -298,7 +300,7 @@ contract QYP_DCA {
                 block.timestamp - dca.timestampLastSubmittedOrder >=
                 dca.frequency
             ) {
-                submitdOrder(dca.owner, dca.amountPerOrder, dca.tokenIn, index);
+                submitdOrder(dca.owner, dca.amountPerOrder, dca.tokenIn, index, dca.percentageLower);
             }
         }
     }
@@ -314,7 +316,8 @@ contract QYP_DCA {
         address _recipient,
         uint128 _amountPerOrder,
         address _tokenIn,
-        uint256 _dcaIndex
+        uint256 _dcaIndex,
+        uint256 _percentageLower,
     ) private {
         (, int24 boundary, , ) = grid.slot0();
         // we will place a maker order at the current lower boundary of the grid which corresponds to the best to the current price
@@ -322,6 +325,9 @@ contract QYP_DCA {
             boundary,
             RESOLUTION
         );
+        
+        // apply discount if exists
+        int24 discountedBoundary = calculateDiscount(boundaryLower,_percentageLower);
 
         // build the parameters before placing the order
         IMakerOrderManager.PlaceOrderParameters
@@ -332,7 +338,7 @@ contract QYP_DCA {
                 tokenB: token1,
                 resolution: RESOLUTION,
                 zero: grid.token0() == _tokenIn,
-                boundaryLower: boundaryLower,
+                boundaryLower: discountedBoundary,
                 amount: _amountPerOrder
             });
 
@@ -348,6 +354,9 @@ contract QYP_DCA {
         // emit OrderSubmitted event
         emit OrderSubmitted(_recipient, orderId, _amountPerOrder);
     }
-}
 
-(100-percentageLower)*CurrentPrice/100
+    function calculateDiscount(int24 _boundaryLower, uint256 _percentageLower) private pure returns(int24) {
+        return (100-_percentageLower)*_boundaryLower/100;
+    }
+
+            
