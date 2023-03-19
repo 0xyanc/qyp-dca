@@ -7,7 +7,6 @@ import fleche from '../../public/fleche.png'
 
 import USDC from './Coin/usdc'
 import WETH from './Coin/weth'
-import { stringify } from "querystring";
 
 export const Create = () => {
     const WETH9_address = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
@@ -27,20 +26,20 @@ export const Create = () => {
     const [chosenCoin, setChosenCoin] = useState(true);
     const {address, isConnecting, isDisconnected } = useAccount()
 
-  
+    
     const { data } = useContractReads({
         contracts:[
             {
                 address: USDC_Goerli,
                 abi: erc20ABI,
                 functionName: 'balanceOf',
-                args: [address]
+                args: [address!]
             },
             {
                 address: WETH_Goerli,
                 abi: erc20ABI,
                 functionName: 'balanceOf',
-                args: [address]
+                args: [address!]
             }
         ]
     })
@@ -131,23 +130,23 @@ export const Create = () => {
                         {!data && <p>NO COIN</p>}
                         {chosenCoin && data && 
                         <div>
-                            <p className="text-xs text-right">MAX : {parseInt(data[1])/10**18}</p>
+                            <p className="text-xs text-right">MAX : {parseInt(data[1].toString())/10**18}</p>
                             <input
                                 className="w-full"
                                 type="range"
                                 id="amount_range"
-                                onChange={(event) => {setAmount((parseInt(data[1])/10**18) * (parseInt(event.target.value)/100))}}
+                                onChange={(event) => {setAmount(((parseInt(data[1].toString())/10**18) * (parseInt(event.target.value)/100)).toString())}}
                             />
                         </div>
                         }
                         {!chosenCoin && data && 
                         <div>
-                            <p className="text-xs text-right">MAX : {parseInt(data[0])/10**6}</p>
+                            <p className="text-xs text-right">MAX : {parseInt(data[0].toString())/10**6}</p>
                             <input
                                 className="w-full"
                                 type="range"
                                 id="amount_range"
-                                onChange={(event) => {setAmount((parseInt(data[0])/10**6) * (parseInt(event.target.value)/100))}}
+                                onChange={(event) => {setAmount(((parseInt(data[0].toString())/10**6) * (parseInt(event.target.value)/100)).toString())}}
                             />
                         </div>
                         }
