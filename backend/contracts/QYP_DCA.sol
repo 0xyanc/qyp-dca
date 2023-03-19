@@ -15,6 +15,7 @@ error QYP_DCA__InvalidFrequency();
 error QYP_DCA__InvalidNumberOfOrders();
 error QYP_DCA__InvalidDcaIndex();
 error QYP_DCA__NoDcaPosition();
+error QYP_DCA__UserDoesNotOwnDcaPosition();
 
 /**
  * @title Smart contract managing DCA positions from Users. Calling GridEx contract to submit orders.
@@ -28,6 +29,8 @@ contract QYP_DCA {
         uint256 numberOfOrders;
         uint256 creationDate;
         address tokenIn;
+        address owner;
+        uint256 timestampLastSubmittedOrder;
         uint256[] orderIds;
         uint256 percentageLower;
     }
@@ -54,8 +57,8 @@ contract QYP_DCA {
     /// @dev token1 of the grid pair - should be USDC
     address public immutable token1;
 
-    /// @dev User storage, maps an DCA positions to a User.
-    mapping(address => Dca[]) public usersPositions;
+    /// @dev Dca positions storage
+    Dca[] public allDcaPositions;
 
     /**
      * Fired in submitDcaPosition()
@@ -186,9 +189,11 @@ contract QYP_DCA {
         position.amountPerOrder = _amountPerOrder;
         position.frequency = _frequency;
         position.numberOfOrders = _numberOfOrders;
-        usersPositions[msg.sender].push(position);
-        uint256 length = usersPositions[msg.sender].length;
-        usersPositions[msg.sender][length - 1].orderIds.push(orderId);
+        position.owner = msg.sender;
+        position.timestampLastSubmittedOrder = block.timestamp;
+        position.orderIds[0] = orderId;
+
+        allDcaPositions.push(position);
 
         // emit DcaSubmitted
         emit DcaSubmitted(
@@ -197,7 +202,7 @@ contract QYP_DCA {
             _amountPerOrder,
             _frequency,
             _numberOfOrders,
-            length - 1
+            allDcaPositions.length - 1
         );
         // emit OrderSubmitted event
         emit OrderSubmitted(msg.sender, orderId, _amountPerOrder);
@@ -210,14 +215,18 @@ contract QYP_DCA {
      * @param _unwrapWeth true to unwrap WETH
      */
     function withdrawFunds(uint256 _dcaIndex, bool _unwrapWeth) external {
-        if (usersPositions[msg.sender].length == 0) {
+        if (allDcaPositions.length == 0) {
             revert QYP_DCA__NoDcaPosition();
         }
-        if (_dcaIndex >= usersPositions[msg.sender].length) {
+        if (_dcaIndex >= allDcaPositions.length) {
             revert QYP_DCA__InvalidDcaIndex();
         }
-        uint256[] memory orderIds = usersPositions[msg.sender][_dcaIndex]
-            .orderIds;
+        if (msg.sender != allDcaPositions[_dcaIndex].owner) {
+            revert QYP_DCA__UserDoesNotOwnDcaPosition();
+        }
+        // retrieve orderIds from this dca position
+        uint256[] memory orderIds = allDcaPositions[_dcaIndex].orderIds;
+        // settle and collect all orderIds from this dca position, whether they have been filled or not
         (uint128 amount0Total, uint128 amount1Total) = grid
             .settleMakerOrderAndCollectInBatch(
                 msg.sender,
@@ -245,14 +254,14 @@ contract QYP_DCA {
     ) external view returns (Order[] memory) {
         Order[] memory orders;
         // user has no DCA position
-        if (usersPositions[_user].length == 0) return orders;
+        if (allDcaPositions.length == 0) return orders;
         // dca index does not exist
-        if (_dcaIndex >= usersPositions[msg.sender].length) return orders;
-        // loop through all the orderss of this DCA position
-        uint256[] storage orderIds = usersPositions[msg.sender][_dcaIndex]
-            .orderIds;
-
-        for (uint256 i = 0; i < orderIds.length; ++i) {
+        if (_dcaIndex >= allDcaPositions.length) return orders;
+        // user is different than dca position owner
+        if (_user != allDcaPositions[_dcaIndex].owner) return orders;
+        // loop through all the orders of this DCA position
+        uint256[] storage orderIds = allDcaPositions[_dcaIndex].orderIds;
+        for (uint256 i; i < orderIds.length; ++i) {
             uint256 orderId = orderIds[i];
             // retrieve bundleId that the order belongs to
             (uint64 bundleId, , ) = grid.orders(orderId);
@@ -279,18 +288,34 @@ contract QYP_DCA {
     }
 
     /**
-     * @notice Called by Gelato to submit a maker order for the recipient
+     * @notice Called by Gelato daily to submit orders that are meeting the frequency criteria
+     */
+    function dailyOrderSubmission() external {
+        for (uint256 index; index < allDcaPositions.length; ++index) {
+            Dca memory dca = allDcaPositions[index];
+            // if dca position has waited long enough to submit next order
+            if (
+                block.timestamp - dca.timestampLastSubmittedOrder >=
+                dca.frequency
+            ) {
+                submitdOrder(dca.owner, dca.amountPerOrder, dca.tokenIn, index);
+            }
+        }
+    }
+
+    /**
+     * @notice Submit a maker order for the recipient
      * @param _recipient user that will receive the tokens
      * @param _amountPerOrder amount of tokenIn for the order
      * @param _tokenIn token to DCA in
      * @param _dcaIndex DCA position where the scheduled order originated from
      */
-    function submitScheduledOrder(
+    function submitdOrder(
         address _recipient,
         uint128 _amountPerOrder,
         address _tokenIn,
         uint256 _dcaIndex
-    ) external {
+    ) private {
         (, int24 boundary, , ) = grid.slot0();
         // we will place a maker order at the current lower boundary of the grid which corresponds to the best to the current price
         int24 boundaryLower = BoundaryMath.getBoundaryLowerAtBoundary(
@@ -314,8 +339,11 @@ contract QYP_DCA {
         // call the Grid to place the order
         uint256 orderId = makerOrderManager.placeMakerOrder(parameters);
 
+        // update last submitted order timestamp for this DCA
+        allDcaPositions[_dcaIndex].timestampLastSubmittedOrder = block
+            .timestamp;
         // add the orderId to the array of the user's specific DCA position
-        usersPositions[msg.sender][_dcaIndex].orderIds.push(orderId);
+        allDcaPositions[_dcaIndex].orderIds.push(orderId);
 
         // emit OrderSubmitted event
         emit OrderSubmitted(_recipient, orderId, _amountPerOrder);

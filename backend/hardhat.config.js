@@ -8,7 +8,8 @@ require("@nomicfoundation/hardhat-chai-matchers")
 
 const PK = process.env.PK || "";
 const ARBISCAN = process.env.ARBISCAN || "";
-const ALCHEMY_ARBI_GOERLI = process.env.ALCHEMY_ARBI_GOERLI || "";
+const ETHERSCAN = process.env.ETHERSCAN || "";
+const ALCHEMY_GOERLI = process.env.ALCHEMY_GOERLI || "";
 const ALCHEMY_ARBI_MAINNET = process.env.ALCHEMY_ARBI_MAINNET || "";
 
 module.exports = {
@@ -26,12 +27,12 @@ module.exports = {
         blockNumber: 71049942
       }
     },
-    // goerli: {
-    //   url: ALCHEMY_GOERLI,
-    //   accounts: [`0x${PK}`],
-    //   chainId: 5,
-    //   blockConfirmations: 6
-    // },
+    goerli: {
+      url: ALCHEMY_GOERLI,
+      accounts: [`0x${PK}`],
+      chainId: 5,
+      blockConfirmations: 6
+    },
   },
   solidity: {
     compilers: [
@@ -48,7 +49,7 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      goerli: ARBISCAN
+      goerli: ETHERSCAN
     }
   },
   namedAccounts: {
