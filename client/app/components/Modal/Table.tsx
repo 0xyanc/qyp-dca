@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
-
+import { useContractRead } from 'wagmi'
 import Image from 'next/image';
 import fleche from '../../../public/fleche.png'
 import { dataShowDcaInfo } from './dummydata'
 import USDC from './../Coin/usdc'
 import WETH from './../Coin/weth'
+
 
 function Table({ OpenModalTable, setOpenModalTable }: { OpenModalTable: boolean, setOpenModalTable: Dispatch<SetStateAction<boolean>> }) {
 

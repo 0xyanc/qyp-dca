@@ -3,7 +3,6 @@ import { useState } from 'react';
 import Image from 'next/image';
 import fleche from '../../public/fleche.png'
 import Table from './Modal/Table';
-
 import USDC from './Coin/usdc'
 import WETH from './Coin/weth'
 
