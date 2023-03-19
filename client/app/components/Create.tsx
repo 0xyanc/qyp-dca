@@ -24,8 +24,7 @@ export const Create = () => {
     const [type, setType] = useState('market')
     const [price, setPrice] = useState('0')
     const [chosenCoin, setChosenCoin] = useState(true);
-    const { address, isConnecting, isDisconnected } = useAccount()
-
+    const { address, isConnected, isConnecting, isDisconnected } = useAccount()
 
     const { data } = useContractReads({
         contracts: [
@@ -44,15 +43,9 @@ export const Create = () => {
         ]
     })
 
-
-    useEffect(() => {
-        console.log(`periodAmount: ${periodAmount}, isTotal: ${isTotal}, nbOrder: ${nbOrder}, frequency:${frequency} nbOrder:${nbOrder} price:${price}`)
-    }, [amount, isTotal, nbOrder, frequency, percentage, type, price])
-
-    useEffect(() => {
-        calculAmount();
-    }, [amount, isTotal, nbOrder])
-
+    // useEffect(() => {
+    //     calculAmount();
+    // }, [amount, isTotal, nbOrder])
 
     const handleFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFrequency(event.target.value)
@@ -71,7 +64,7 @@ export const Create = () => {
         setType(event.target.value)
     }
 
-    function calculAmount() {
+    const calculAmount = () => {
         if (isTotal) {
             setPeriodAmount(new Intl.NumberFormat('en-US', { maximumSignificantDigits: 5 }).format((parseFloat(amount) / parseInt(nbOrder))));
         }
@@ -127,8 +120,8 @@ export const Create = () => {
                             {chosenCoin && <WETH></WETH>}
                             {!chosenCoin && <USDC></USDC>}
                         </div>
-                        {!data && <p>NO COIN</p>}
-                        {chosenCoin && data &&
+                        {isConnected && !data && <p>NO COIN</p>}
+                        {isConnected && chosenCoin && data &&
                             <div>
                                 <p className="text-xs text-right">MAX : {parseInt(data[1].toString()) / 10 ** 18}</p>
                                 <input
@@ -139,7 +132,7 @@ export const Create = () => {
                                 />
                             </div>
                         }
-                        {!chosenCoin && data &&
+                        {isConnected && !chosenCoin && data &&
                             <div>
                                 <p className="text-xs text-right">MAX : {parseInt(data[0].toString()) / 10 ** 6}</p>
                                 <input
@@ -245,7 +238,7 @@ export const Create = () => {
                             <div>%  Price : {1600 * (1 - (parseInt(percentage) / 100))}</div>
                         </div>
                     }
-                    {/* <div className="flex gap-1">
+                    <div className="flex gap-1">
                         <input type="radio" name="type" value={"fixed"} onClick={() => setType("fixed")} />
                         <label>Fixed Price</label>
                     </div>
@@ -264,7 +257,7 @@ export const Create = () => {
                             />
                             <p>USDC</p>
                         </div>
-                    } */}
+                    }
                 </div>
                 <button className="mx-auto py-2 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg">
                     Submit
