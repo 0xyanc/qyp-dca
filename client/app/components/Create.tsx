@@ -57,10 +57,12 @@ export const Create = () => {
       },
     ],
     onSuccess(data) {
-      setWethAllowance(data[2]);
-      setUsdcAllowance(data[3]);
-      setUsdcBalance(parseInt(data[0]._hex.toString()) / 10 ** 6);
-      setWethBalance(parseInt(data[1]._hex.toString()) / 10 ** 18);
+      if (isConnected) {
+        setWethAllowance(data[2]);
+        setUsdcAllowance(data[3]);
+        setUsdcBalance(parseInt(data[0]._hex.toString()) / 10 ** 6);
+        setWethBalance(parseInt(data[1]._hex.toString()) / 10 ** 18);
+      }
     },
   });
 

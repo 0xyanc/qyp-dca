@@ -3,7 +3,7 @@ import Image from "next/image";
 import fleche from "../../public/fleche.png";
 import Table from "./Modal/Table";
 import { ABI_QYP } from "../abi/ABI_QYP";
-import { useContractRead } from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
 import { SmartContract } from "./Coin/addresses";
 import USDC from "./Coin/usdc";
 import WETH from "./Coin/weth";
@@ -12,6 +12,7 @@ import WETH from "./Coin/weth";
 export const Position = () => {
   const [OpenModalTable, setOpenModalTable] = useState(false);
   const [position, setPosition] = useState(true);
+  const { isConnected } = useAccount()
 
   function toggleTable() {
     setOpenModalTable(!OpenModalTable);
@@ -21,10 +22,7 @@ export const Position = () => {
     address: SmartContract,
     abi: ABI_QYP,
     functionName: "allDcaPositions",
-    args: [0],
-    onSuccess(data) {
-      console.log(data);
-    },
+    args: [0]
   });
 
   return (
