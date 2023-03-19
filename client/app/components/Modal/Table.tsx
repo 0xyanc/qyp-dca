@@ -61,7 +61,7 @@ function Table({
                     <tbody>
                         <tr>
                             <td>19/03/2023</td>
-                            <td>1614$</td>
+                            <td>$1794</td>
                             <td>V</td>
                         </tr>
                     </tbody>

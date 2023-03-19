@@ -36,11 +36,11 @@ export const Position = () => {
             <h1 className="flex text-center text-3xl mb-3">
               <USDC></USDC> <Image src={fleche} alt="fleche icon" height={40} /> <WETH></WETH>
             </h1>
-            <p>Period time : 30 days</p>
+            <p>Period time : 7 days</p>
             <p>Amount per period : $2</p>
             <p>Number of period : 5</p>
             <div className="mt-5 bg-black h-2.5">
-              <div className="w-1/12 bg-white h-2.5"> </div>
+              <div className="w-1/5 bg-white h-2.5"> </div>
             </div>
             <Table OpenModalTable={OpenModalTable} setOpenModalTable={setOpenModalTable} />
           </div>
