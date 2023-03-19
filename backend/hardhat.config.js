@@ -33,6 +33,12 @@ module.exports = {
       chainId: 5,
       blockConfirmations: 6
     },
+    arbitrum: {
+      url: ALCHEMY_ARBI_MAINNET,
+      accounts: [`0x${PK}`],
+      chainId: 42161,
+      blockConfirmations: 6
+    },
   },
   solidity: {
     compilers: [
@@ -49,7 +55,7 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      goerli: ETHERSCAN
+      goerli: ARBISCAN
     }
   },
   namedAccounts: {

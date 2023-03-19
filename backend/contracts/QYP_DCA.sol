@@ -245,8 +245,10 @@ contract QYP_DCA {
                 orderIds,
                 _unwrapWeth
             );
-        //tranfer WETh
-        //transfer USDC
+        //tranfer WETh back to user
+        SafeERC20.safeTransfer(IERC20(token0), msg.sender, amount0Total);
+        //transfer USDC back to user
+        SafeERC20.safeTransfer(IERC20(token1), msg.sender, amount1Total);
         // emit FundsWithdrawn event
         emit FundsWithdrawn(
             msg.sender,

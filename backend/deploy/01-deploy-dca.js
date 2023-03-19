@@ -23,13 +23,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     })
     log("--------------------------------------")
 
-    // console.log(qypDca.address)
-    // const qypDcaContract = await ethers.getContractAt("QYP_DCA", qypDca.address)
-
-    // // console.log(qypDcaContract)
-    // const address = await qypDcaContract.gridAddress()
-    // console.log(address)
-
     //Verify the smart contract 
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN) {
         log("Verifying contracts...")
