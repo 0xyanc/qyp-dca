@@ -100,11 +100,11 @@ export const Create = () => {
       1,
       5,
       5,
-      WETH9_address,
+      USDC_address,
       0,
     ],
   });
-  console.log(parseInt(periodAmount) * parseInt(nbOrder));
+  console.log(SmartContract);
   const { write } = useContractWrite(config);
 
   useEffect(() => {
