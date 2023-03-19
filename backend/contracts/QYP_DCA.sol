@@ -16,6 +16,7 @@ error QYP_DCA__InvalidNumberOfOrders();
 error QYP_DCA__InvalidDcaIndex();
 error QYP_DCA__NoDcaPosition();
 error QYP_DCA__UserDoesNotOwnDcaPosition();
+error QYP_DCA__InvalidPercentage();
 
 /**
  * @title Smart contract managing DCA positions from Users. Calling GridEx contract to submit orders.
@@ -143,6 +144,9 @@ contract QYP_DCA {
         }
         if (_numberOfOrders == 0) {
             revert QYP_DCA__InvalidNumberOfOrders();
+        }
+        if (_percentageLower < 0 || _percentageLower > 100) {
+            revert QYP_DCA__InvalidPercentage();
         }
         // msg.sender MUST approve the contract to spend the input token
         // transfer the specified amount of tokenIn to this contract
