@@ -28,11 +28,11 @@ contract QYP_DCA {
         uint256 frequency;
         uint256 numberOfOrders;
         uint256 creationDate;
+        uint256 timestampLastSubmittedOrder;
         address tokenIn;
         address owner;
-        uint256 timestampLastSubmittedOrder;
+        int24 percentageLower;
         uint256[] orderIds;
-        uint256 percentageLower;
     }
 
     struct Order {
@@ -129,8 +129,8 @@ contract QYP_DCA {
         uint128 _amountPerOrder,
         uint256 _frequency,
         uint256 _numberOfOrders,
-        address _tokenIn
-        uint256 _percentageLower
+        address _tokenIn,
+        int24 _percentageLower
     ) external {
         if (_tokenIn != token0 && _tokenIn != token1) {
             revert QYP_DCA__InvalidToken();
@@ -167,7 +167,10 @@ contract QYP_DCA {
             RESOLUTION
         );
         // apply discount if exists
-        int24 discountedBoundary = calculateDiscount(boundaryLower,_percentageLower);
+        int24 discountedBoundary = calculateDiscount(
+            boundaryLower,
+            _percentageLower
+        );
 
         // build the parameters before placing the order
         IMakerOrderManager.PlaceOrderParameters
@@ -300,7 +303,13 @@ contract QYP_DCA {
                 block.timestamp - dca.timestampLastSubmittedOrder >=
                 dca.frequency
             ) {
-                submitdOrder(dca.owner, dca.amountPerOrder, dca.tokenIn, index, dca.percentageLower);
+                submitdOrder(
+                    dca.owner,
+                    dca.amountPerOrder,
+                    dca.tokenIn,
+                    index,
+                    dca.percentageLower
+                );
             }
         }
     }
@@ -317,7 +326,7 @@ contract QYP_DCA {
         uint128 _amountPerOrder,
         address _tokenIn,
         uint256 _dcaIndex,
-        uint256 _percentageLower,
+        int24 _percentageLower
     ) private {
         (, int24 boundary, , ) = grid.slot0();
         // we will place a maker order at the current lower boundary of the grid which corresponds to the best to the current price
@@ -325,9 +334,12 @@ contract QYP_DCA {
             boundary,
             RESOLUTION
         );
-        
+
         // apply discount if exists
-        int24 discountedBoundary = calculateDiscount(boundaryLower,_percentageLower);
+        int24 discountedBoundary = calculateDiscount(
+            boundaryLower,
+            _percentageLower
+        );
 
         // build the parameters before placing the order
         IMakerOrderManager.PlaceOrderParameters
@@ -355,8 +367,10 @@ contract QYP_DCA {
         emit OrderSubmitted(_recipient, orderId, _amountPerOrder);
     }
 
-    function calculateDiscount(int24 _boundaryLower, uint256 _percentageLower) private pure returns(int24) {
-        return (100-_percentageLower)*_boundaryLower/100;
+    function calculateDiscount(
+        int24 _boundaryLower,
+        int24 _percentageLower
+    ) private pure returns (int24) {
+        return ((100 - _percentageLower) * _boundaryLower) / 100;
     }
-
-            
+}
