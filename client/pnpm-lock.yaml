@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@gelatonetwork/automate-sdk': ^2.1.0
   '@rainbow-me/rainbowkit': ^0.12.1
   '@types/node': 18.15.3
   '@types/react': 18.0.28
@@ -19,6 +20,7 @@ specifiers:
   wagmi: ^0.12.2
 
 dependencies:
+  '@gelatonetwork/automate-sdk': 2.1.0
   '@rainbow-me/rainbowkit': 0.12.1_hm5udtzceq6uezvnnsmetyerdu
   '@types/node': 18.15.3
   '@types/react': 18.0.28
@@ -522,6 +524,17 @@ packages:
       '@ethersproject/logger': 5.7.0
       '@ethersproject/properties': 5.7.0
       '@ethersproject/strings': 5.7.0
+    dev: false
+
+  /@gelatonetwork/automate-sdk/2.1.0:
+    resolution: {integrity: sha512-sb3o62eookTRIK38CVT74uZh3OXScZAFrI/2YKbDuaj6ini7Fr0r5p5MIYqliVTr4PkHGV1CWbdFE6f/cQ1UNg==}
+    dependencies:
+      axios: 0.24.0
+      ethers: 5.7.2
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - utf-8-validate
     dev: false
 
   /@humanwhocodes/config-array/0.11.8:
@@ -1998,6 +2011,14 @@ packages:
 
   /axios/0.21.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
+    dependencies:
+      follow-redirects: 1.15.2
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /axios/0.24.0:
+    resolution: {integrity: sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==}
     dependencies:
       follow-redirects: 1.15.2
     transitivePeerDependencies:
