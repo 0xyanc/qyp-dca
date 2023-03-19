@@ -29,6 +29,7 @@ contract QYP_DCA {
         uint256 creationDate;
         address tokenIn;
         uint256[] orderIds;
+        uint256 percentageLower;
     }
 
     struct Order {
@@ -126,6 +127,7 @@ contract QYP_DCA {
         uint256 _frequency,
         uint256 _numberOfOrders,
         address _tokenIn
+        uint256 _percentageLower
     ) external {
         if (_tokenIn != token0 && _tokenIn != token1) {
             revert QYP_DCA__InvalidToken();
@@ -319,3 +321,5 @@ contract QYP_DCA {
         emit OrderSubmitted(_recipient, orderId, _amountPerOrder);
     }
 }
+
+(100-percentageLower)*CurrentPrice/100
