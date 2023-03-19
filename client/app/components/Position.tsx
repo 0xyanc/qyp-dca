@@ -1,18 +1,18 @@
 import { useState } from "react";
-
 import Image from "next/image";
 import fleche from "../../public/fleche.png";
 import Table from "./Modal/Table";
 import { ABI_QYP } from "../abi/ABI_QYP";
-import { useContractRead } from "wagmi";
-
+import { useAccount, useContractRead } from "wagmi";
+import { SmartContract } from "./Coin/addresses";
 import USDC from "./Coin/usdc";
 import WETH from "./Coin/weth";
+
 
 export const Position = () => {
   const [OpenModalTable, setOpenModalTable] = useState(false);
   const [position, setPosition] = useState(true);
-  const SmartContract: `0x${string}` = "0x04C89607413713Ec9775E14b954286519d836FEf";
+  const { isConnected } = useAccount()
 
   function toggleTable() {
     setOpenModalTable(!OpenModalTable);
@@ -22,10 +22,7 @@ export const Position = () => {
     address: SmartContract,
     abi: ABI_QYP,
     functionName: "allDcaPositions",
-    args: [0],
-    onSuccess(data) {
-      console.log(data);
-    },
+    args: [0]
   });
 
   return (
@@ -39,9 +36,9 @@ export const Position = () => {
             <h1 className="flex text-center text-3xl mb-3">
               <USDC></USDC> <Image src={fleche} alt="fleche icon" height={40} /> <WETH></WETH>
             </h1>
-            <p>Period time : 7 days</p>
-            <p>Amount per period : $100</p>
-            <p>Number of period : 10</p>
+            <p>Period time : 30 days</p>
+            <p>Amount per period : $2</p>
+            <p>Number of period : 5</p>
             <div className="mt-5 bg-black h-2.5">
               <div className="w-1/12 bg-white h-2.5"> </div>
             </div>

@@ -5,7 +5,7 @@ import { ABI_QYP } from "../abi/ABI_QYP";
 import Image from "next/image";
 import change_icon from "../../public/change.png";
 import fleche from "../../public/fleche.png";
-
+import { SmartContract } from "./Coin/addresses";
 import USDC from "./Coin/usdc";
 import WETH from "./Coin/weth";
 import { BigNumber, ethers } from "ethers";
@@ -15,9 +15,6 @@ export const Create = () => {
   const USDC_address: `0x${string}` = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
   const USDC_Goerli: `0x${string}` = "0x65afadd39029741b3b8f0756952c74678c9cec93";
   const WETH_Goerli: `0x${string}` = "0xccb14936c2e000ed8393a571d15a2672537838ad";
-
-  const SmartContract: `0x${string}` = "0x04C89607413713Ec9775E14b954286519d836FEf";
-
   const [isTotal, setIsTotal] = useState(false);
   const [amount, setAmount] = useState("0");
   const [periodAmount, setPeriodAmount] = useState("0");
@@ -60,10 +57,12 @@ export const Create = () => {
       },
     ],
     onSuccess(data) {
-      setWethAllowance(data[2]);
-      setUsdcAllowance(data[3]);
-      setUsdcBalance(parseInt(data[0]._hex.toString()) / 10 ** 6);
-      setWethBalance(parseInt(data[1]._hex.toString()) / 10 ** 18);
+      if (isConnected) {
+        setWethAllowance(data[2]);
+        setUsdcAllowance(data[3]);
+        setUsdcBalance(parseInt(data[0]._hex.toString()) / 10 ** 6);
+        setWethBalance(parseInt(data[1]._hex.toString()) / 10 ** 18);
+      }
     },
   });
 

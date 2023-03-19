@@ -1,0 +1,1 @@
+export const SmartContract: `0x${string}` = "0x04C89607413713Ec9775E14b954286519d836FEf"

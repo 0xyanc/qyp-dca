@@ -3,11 +3,11 @@
 import { Header, Create, Footer, Position, Tab } from "./components";
 import { getDefaultWallets, RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, goerli, WagmiConfig } from "wagmi";
-import { hardhat } from "wagmi/chains";
+import { arbitrum, hardhat } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { useState } from "react";
 
-const { chains, provider } = configureChains([hardhat], [publicProvider()]);
+const { chains, provider } = configureChains([arbitrum], [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
   appName: "ODCA",
