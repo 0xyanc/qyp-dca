@@ -24,7 +24,7 @@ export const Create = () => {
     const [type, setType] = useState('market')
     const [price, setPrice] = useState('0')
     const [chosenCoin, setChosenCoin] = useState(true);
-    const { address, isConnected, isConnecting, isDisconnected } = useAccount()
+    const { address, isConnected } = useAccount()
 
     const { data } = useContractReads({
         contracts: [
