@@ -320,6 +320,11 @@ export const ABI_QYP = [
             name: "makerAmountRemaining",
             type: "uint128",
           },
+          {
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
         ],
         internalType: "struct QYP_DCA.Order[]",
         name: "",
