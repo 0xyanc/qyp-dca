@@ -1,13 +1,21 @@
 import { useEffect, useState } from "react"
 
+import { useContractReads, useAccount, erc20ABI } from 'wagmi'
 import Image from 'next/image';
 import change_icon from '../../public/change.png'
 import fleche from '../../public/fleche.png'
 
 import USDC from './Coin/usdc'
 import WETH from './Coin/weth'
+import { stringify } from "querystring";
 
 export const Create = () => {
+    const WETH9_address = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
+    const USDC_address = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8';
+    const USDC_Goerli : `0x${string}` = '0x65afadd39029741b3b8f0756952c74678c9cec93';
+    const WETH_Goerli : `0x${string}` = '0xccb14936c2e000ed8393a571d15a2672537838ad';
+
+
     const [isTotal, setIsTotal] = useState(false)
     const [amount, setAmount] = useState('0')
     const [periodAmount, setPeriodAmount] = useState('0')
@@ -17,7 +25,27 @@ export const Create = () => {
     const [type, setType] = useState('market')
     const [price, setPrice] = useState('0')
     const [chosenCoin, setChosenCoin] = useState(true);
+    const {address, isConnecting, isDisconnected } = useAccount()
 
+  
+    const { data } = useContractReads({
+        contracts:[
+            {
+                address: USDC_Goerli,
+                abi: erc20ABI,
+                functionName: 'balanceOf',
+                args: [address]
+            },
+            {
+                address: WETH_Goerli,
+                abi: erc20ABI,
+                functionName: 'balanceOf',
+                args: [address]
+            }
+        ]
+    })
+
+    
     useEffect(() => {
         console.log(`periodAmount: ${periodAmount}, isTotal: ${isTotal}, nbOrder: ${nbOrder}, frequency:${frequency} nbOrder:${nbOrder} price:${price}`)
     }, [amount, isTotal, nbOrder, frequency, percentage, type, price])
@@ -87,18 +115,43 @@ export const Create = () => {
                 <div className="subcard">
                     <div className="flex flex-col">
                         <p className="text-l ml-5 underline mb-1">Amount</p>
+                        
                         <div className="flex gap-1">
                             <input
                                 className="w-20 rounded text-black px-1 ml-5"
                                 type="text"
                                 id="amount"
                                 name="amount"
+                                value={amount}
                                 onChange={(event) => { setAmount(event.target.value) }}
                             />
                             {chosenCoin && <WETH></WETH>}
                             {!chosenCoin && <USDC></USDC>}
                         </div>
-                    </div>
+                        {!data && <p>NO COIN</p>}
+                        {chosenCoin && data && 
+                        <div>
+                            <p className="text-xs text-right">MAX : {parseInt(data[1])/10**18}</p>
+                            <input
+                                className="w-full"
+                                type="range"
+                                id="amount_range"
+                                onChange={(event) => {setAmount((parseInt(data[1])/10**18) * (parseInt(event.target.value)/100))}}
+                            />
+                        </div>
+                        }
+                        {!chosenCoin && data && 
+                        <div>
+                            <p className="text-xs text-right">MAX : {parseInt(data[0])/10**6}</p>
+                            <input
+                                className="w-full"
+                                type="range"
+                                id="amount_range"
+                                onChange={(event) => {setAmount((parseInt(data[0])/10**6) * (parseInt(event.target.value)/100))}}
+                            />
+                        </div>
+                        }
+                        </div>
                 </div>
 
                 <div className="subcard" onChange={handleFrequency}>
