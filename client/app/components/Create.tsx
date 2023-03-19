@@ -102,7 +102,7 @@ export const Create = () => {
       0,
     ],
   });
-  console.log(isError);
+  console.log(parseInt(periodAmount) * parseInt(nbOrder));
   const { write } = useContractWrite(config);
 
   useEffect(() => {
@@ -305,7 +305,7 @@ export const Create = () => {
             />
             <label>Market Price</label>
           </div>
-          {!openPercent && <div>Price: 1600 USDC</div>}
+          {!openPercent && <div>Price: 1794 USDC</div>}
           <div className="flex gap-1">
             <input type="radio" name="type" value={"percentage"} onChange={handleOpenPercent} />
             <label>Percentage below market price</label>
@@ -327,7 +327,7 @@ export const Create = () => {
                 <div>
                   % Price :{" "}
                   {new Intl.NumberFormat("en-US", { maximumSignificantDigits: 5 }).format(
-                    1600 * (1 - parseInt(percentage) / 100)
+                    1794 * (1 - parseInt(percentage) / 100)
                   )}
                 </div>
               </div>

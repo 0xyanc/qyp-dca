@@ -41,6 +41,7 @@ contract QYP_DCA {
         int24 price;
         uint128 makerAmountTotal;
         uint128 makerAmountRemaining;
+        address owner;
     }
 
     /// @dev the makerOrderManager to submit the orders to
@@ -180,7 +181,7 @@ contract QYP_DCA {
         IMakerOrderManager.PlaceOrderParameters
             memory parameters = IMakerOrderManager.PlaceOrderParameters({
                 deadline: block.timestamp,
-                recipient: msg.sender,
+                recipient: address(this),
                 tokenA: token0,
                 tokenB: token1,
                 resolution: RESOLUTION,
@@ -199,7 +200,9 @@ contract QYP_DCA {
         position.frequency = _frequency;
         position.numberOfOrders = _numberOfOrders;
         position.owner = msg.sender;
+        position.creationDate = block.timestamp;
         position.timestampLastSubmittedOrder = block.timestamp;
+        position.tokenIn = _tokenIn;
 
         allDcaPositions.push(position);
         allDcaPositions[allDcaPositions.length - 1].orderIds.push(orderId);
@@ -242,6 +245,8 @@ contract QYP_DCA {
                 orderIds,
                 _unwrapWeth
             );
+        //tranfer WETh
+        //transfer USDC
         // emit FundsWithdrawn event
         emit FundsWithdrawn(
             msg.sender,
@@ -273,7 +278,7 @@ contract QYP_DCA {
         for (uint256 i; i < orderIds.length; ++i) {
             uint256 orderId = orderIds[i];
             // retrieve bundleId that the order belongs to
-            (uint64 bundleId, , ) = grid.orders(orderId);
+            (uint64 bundleId, address owner, ) = grid.orders(orderId);
             // retrieve the price, makerAmountTotal, makerAmountRemaining from the bundle
             (
                 int24 price,
@@ -288,7 +293,8 @@ contract QYP_DCA {
                 orderId,
                 price,
                 makerAmountTotal,
-                makerAmountRemaining
+                makerAmountRemaining,
+                owner
             );
             // add to the array to be returned
             orders[i] = order;
@@ -349,7 +355,7 @@ contract QYP_DCA {
         IMakerOrderManager.PlaceOrderParameters
             memory parameters = IMakerOrderManager.PlaceOrderParameters({
                 deadline: block.timestamp,
-                recipient: _recipient,
+                recipient: address(this),
                 tokenA: token0,
                 tokenB: token1,
                 resolution: RESOLUTION,
