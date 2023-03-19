@@ -43,9 +43,9 @@ export const Create = () => {
         ]
     })
 
-    // useEffect(() => {
-    //     calculAmount();
-    // }, [amount, isTotal, nbOrder])
+    useEffect(() => {
+        calculAmount();
+    }, [amount, isTotal, nbOrder])
 
     const handleFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFrequency(event.target.value)
