@@ -1,12 +1,14 @@
-# Order Dollar Cost Average
+# On Chain Dollar Cost Average
 
-Project for Paris Blockchain Week Hackathon 2023
+Project for Paris Blockchain Week Hackathon 2023 in Gridex track : https://www.gdx.org/
 
 ## Deployment
 https://qyp-dca.vercel.app/
 | Network          | Address                                    |
 | ---------------- | ------------------------------------------ |
 | Arbitrum Mainnet | 0x4F49dc13C90fc023Bc19ba1d972630C0D53b8340 |  |
+
+https://arbiscan.io/address/0x4f49dc13c90fc023bc19ba1d972630c0d53b8340
 
 ## Building ODCA
 ##### Clone the project
@@ -63,4 +65,7 @@ $ npm install
 - ALCHEMY_ARBI_GOERLI: Alchemy Key for Goerli
 - ALCHEMY_ARBI_MAINNET: Alchemy key for Arbitrum mainnet
 
-### Core Contracts ###
+### Contact ###
+Solidity: Yannick CHI : https://www.linkedin.com/in/yannick-chi
+Front Ent: https://www.linkedin.com/in/quentin-denolle-6542a3160/
+Full-Stack: https://www.linkedin.com/in/grandne/
