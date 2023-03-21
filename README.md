@@ -41,6 +41,9 @@ $ npm run dev
 The backend server must be launched to display and interact with the catalog
 Please follow next section for installing and deploying backend server
 
+- The address of the smart contract used by the Front End is in /client/app/components/Coin/addresses.ts
+- The chain configuration is in /client/app/page.tsx. Only Arbitrum mainnet is used   
+
 ### Core Contracts ###
 We use Hardhat
 We use Gelato to automate our transactions https://app.gelato.network/
