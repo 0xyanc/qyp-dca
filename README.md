@@ -29,12 +29,12 @@ $ cd client
 
 2. Install the dependencies
 ```bash
-$ npm install
+$ yarn install
 ```
 
 3. Launch the server locally
 ```bash
-$ npm run dev
+$ yarn run dev
 ```
 
 4. Open your browser and go to `http://localhost:3000`
@@ -57,7 +57,7 @@ $ cd backend
 
 2. Install the dependencies
 ```bash
-$ npm install
+$ yarn install
 ```
 
 3. The contrat is available in "contracts" folder
