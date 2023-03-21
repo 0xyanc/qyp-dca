@@ -66,6 +66,6 @@ $ npm install
 - ALCHEMY_ARBI_MAINNET: Alchemy key for Arbitrum mainnet
 
 ### Contact ###
-- Solidity: Yannick CHI : https://www.linkedin.com/in/yannick-chi
+- Solidity: https://www.linkedin.com/in/yannick-chi
 - Front End: https://www.linkedin.com/in/quentin-denolle-6542a3160/
 - Full-Stack: https://www.linkedin.com/in/grandne/
