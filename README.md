@@ -45,7 +45,8 @@ Please follow next section for installing and deploying backend server
 - The chain configuration is in /client/app/page.tsx. Only Arbitrum mainnet is used   
 
 ### Core Contracts ###
-We use Hardhat
+We use Hardhat for contract development
+
 We use Gelato to automate our transactions https://app.gelato.network/
 Every day we call the function dailyOrderSubmission() from our smart contract to submit orders that are meeting the frequency criteria
 
