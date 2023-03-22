@@ -8,12 +8,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const chainId = network.config.chainId
 
     const makerOrderManagerAddress = networkConfig[chainId].MakerOrderManager
+    const ETHUSD5GridAddress = networkConfig[chainId].ETHUSD5Grid
     const wethAddress = networkConfig[chainId].WETH
     const usdcAddress = networkConfig[chainId].USDC
 
 
     log("--------------------------------------")
-    let args = [makerOrderManagerAddress, wethAddress, usdcAddress]
+    let args = [makerOrderManagerAddress, ETHUSD5GridAddress, wethAddress, usdcAddress]
     log("*** Deploying QYP_DCA ***")
     const qypDca = await deploy("QYP_DCA", {
         from: deployer,

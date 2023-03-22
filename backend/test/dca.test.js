@@ -56,7 +56,6 @@ describe("Unit tests QYP_DCA contracts", function () {
             const frequency = 3600
             const numberOfOrders = 5
             const wethToken = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"
-            const price = "1800"
             const dca = await qypDca.submitDcaPosition(totalAmount, amountPerOrder, frequency, numberOfOrders, wethToken, price)
             const userPosition = await qypDca.usersPositions(deployer.address, 0)
             // console.log(userPosition)

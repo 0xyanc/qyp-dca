@@ -54,9 +54,7 @@ module.exports = {
     ]
   },
   etherscan: {
-    apiKey: {
-      goerli: ARBISCAN
-    }
+    apiKey: ARBISCAN
   },
   namedAccounts: {
     deployer: {

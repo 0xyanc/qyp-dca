@@ -17,6 +17,7 @@ error QYP_DCA__InvalidDcaIndex();
 error QYP_DCA__NoDcaPosition();
 error QYP_DCA__UserDoesNotOwnDcaPosition();
 error QYP_DCA__InvalidPercentage();
+error QYP_DCA__OrdersNotAllSubmitted();
 
 /**
  * @title Smart contract managing DCA positions from Users. Calling GridEx contract to submit orders.
@@ -32,7 +33,7 @@ contract QYP_DCA {
         uint256 timestampLastSubmittedOrder;
         address tokenIn;
         address owner;
-        int24 percentageLower;
+        uint176 index;
         uint256[] orderIds;
     }
 
@@ -65,14 +66,12 @@ contract QYP_DCA {
     /**
      * Fired in submitDcaPosition()
      * @param user user that submitted the DCA position
-     * @param totalAmount total amount invested by the user
      * @param amountPerOrder amount to invest for each order
      * @param frequency frequency to invest the amount
      * @param numberOfOrders number of orders to be submitted in total
      */
     event DcaSubmitted(
         address indexed user,
-        uint256 totalAmount,
         uint128 amountPerOrder,
         uint256 frequency,
         uint256 numberOfOrders,
@@ -104,40 +103,47 @@ contract QYP_DCA {
 
     constructor(
         IMakerOrderManager _makerOrderManager,
+        IGrid _grid,
         address _token0,
         address _token1
     ) {
         makerOrderManager = _makerOrderManager;
+        grid = _grid;
         token0 = _token0;
         token1 = _token1;
-        // compute grid address based on token pair
-        gridAddress = GridAddress.computeAddress(
-            makerOrderManager.gridFactory(),
-            GridAddress.gridKey(token0, token1, RESOLUTION)
+
+        // allow the maker order manager to spend token0
+        SafeERC20.safeIncreaseAllowance(
+            IERC20(token0),
+            address(makerOrderManager),
+            2 ** 256 - 1
         );
-        grid = IGrid(gridAddress);
+
+        // allow the maker order manager to spend token1
+        SafeERC20.safeIncreaseAllowance(
+            IERC20(token1),
+            address(makerOrderManager),
+            2 ** 256 - 1
+        );
     }
 
     /**
      * @notice Submit a DCA position, specifying the desired amount, frequency and number of orders.
-     * @param _totalAmount total amount to be invested by the user
      * @param _amountPerOrder amount to be invested by the user for each period
      * @param _frequency frequency to invest the user's fund
      * @param _numberOfOrders total number of orders
      * @param _tokenIn token to DCA in
      */
     function submitDcaPosition(
-        uint256 _totalAmount,
         uint128 _amountPerOrder,
         uint256 _frequency,
         uint256 _numberOfOrders,
-        address _tokenIn,
-        int24 _percentageLower
+        address _tokenIn
     ) external {
         if (_tokenIn != token0 && _tokenIn != token1) {
             revert QYP_DCA__InvalidToken();
         }
-        if (_totalAmount == 0 || _amountPerOrder == 0) {
+        if (_amountPerOrder == 0) {
             revert QYP_DCA__InvalidAmount();
         }
         if (_frequency == 0) {
@@ -146,23 +152,13 @@ contract QYP_DCA {
         if (_numberOfOrders == 0) {
             revert QYP_DCA__InvalidNumberOfOrders();
         }
-        if (_percentageLower < 0 || _percentageLower > 100) {
-            revert QYP_DCA__InvalidPercentage();
-        }
         // msg.sender MUST approve the contract to spend the input token
         // transfer the specified amount of tokenIn to this contract
         SafeERC20.safeTransferFrom(
             IERC20(_tokenIn),
             msg.sender,
             address(this),
-            _totalAmount
-        );
-
-        // increase the allowance for the maker order manager to spend tokenIn
-        SafeERC20.safeIncreaseAllowance(
-            IERC20(_tokenIn),
-            address(makerOrderManager),
-            _totalAmount
+            _amountPerOrder * _numberOfOrders
         );
 
         (, int24 boundary, , ) = grid.slot0();
@@ -171,11 +167,6 @@ contract QYP_DCA {
             boundary,
             RESOLUTION
         );
-        // apply discount if exists
-        // int24 discountedBoundary = calculateDiscount(
-        //     boundaryLower,
-        //     _percentageLower
-        // );
 
         // build the parameters before placing the order
         IMakerOrderManager.PlaceOrderParameters
@@ -195,7 +186,6 @@ contract QYP_DCA {
 
         // build the DCA position
         Dca memory position;
-        position.totalAmount = _totalAmount;
         position.amountPerOrder = _amountPerOrder;
         position.frequency = _frequency;
         position.numberOfOrders = _numberOfOrders;
@@ -203,6 +193,7 @@ contract QYP_DCA {
         position.creationDate = block.timestamp;
         position.timestampLastSubmittedOrder = block.timestamp;
         position.tokenIn = _tokenIn;
+        position.index = uint176(allDcaPositions.length);
 
         allDcaPositions.push(position);
         allDcaPositions[allDcaPositions.length - 1].orderIds.push(orderId);
@@ -210,7 +201,6 @@ contract QYP_DCA {
         // emit DcaSubmitted
         emit DcaSubmitted(
             msg.sender,
-            _totalAmount,
             _amountPerOrder,
             _frequency,
             _numberOfOrders,
@@ -236,12 +226,18 @@ contract QYP_DCA {
         if (msg.sender != allDcaPositions[_dcaIndex].owner) {
             revert QYP_DCA__UserDoesNotOwnDcaPosition();
         }
+        if (
+            allDcaPositions[_dcaIndex].orderIds.length <
+            allDcaPositions[_dcaIndex].numberOfOrders
+        ) {
+            revert QYP_DCA__OrdersNotAllSubmitted();
+        }
         // retrieve orderIds from this dca position
         uint256[] memory orderIds = allDcaPositions[_dcaIndex].orderIds;
         // settle and collect all orderIds from this dca position, whether they have been filled or not
         (uint128 amount0Total, uint128 amount1Total) = grid
             .settleMakerOrderAndCollectInBatch(
-                msg.sender,
+                address(this),
                 orderIds,
                 _unwrapWeth
             );
@@ -249,6 +245,8 @@ contract QYP_DCA {
         SafeERC20.safeTransfer(IERC20(token0), msg.sender, amount0Total);
         //transfer USDC back to user
         SafeERC20.safeTransfer(IERC20(token1), msg.sender, amount1Total);
+        // remove the position
+        delete allDcaPositions[_dcaIndex];
         // emit FundsWithdrawn event
         emit FundsWithdrawn(
             msg.sender,
@@ -268,15 +266,16 @@ contract QYP_DCA {
         address _user,
         uint256 _dcaIndex
     ) external view returns (Order[] memory) {
-        Order[] memory orders;
+        Order[] memory emptyOrders = new Order[](0);
         // user has no DCA position
-        if (allDcaPositions.length == 0) return orders;
+        if (allDcaPositions.length == 0) return emptyOrders;
         // dca index does not exist
-        if (_dcaIndex >= allDcaPositions.length) return orders;
+        if (_dcaIndex >= allDcaPositions.length) return emptyOrders;
         // user is different than dca position owner
-        if (_user != allDcaPositions[_dcaIndex].owner) return orders;
+        if (_user != allDcaPositions[_dcaIndex].owner) return emptyOrders;
         // loop through all the orders of this DCA position
         uint256[] storage orderIds = allDcaPositions[_dcaIndex].orderIds;
+        Order[] memory orders = new Order[](orderIds.length);
         for (uint256 i; i < orderIds.length; ++i) {
             uint256 orderId = orderIds[i];
             // retrieve bundleId that the order belongs to
@@ -315,15 +314,16 @@ contract QYP_DCA {
                 block.timestamp - dca.timestampLastSubmittedOrder >=
                 dca.frequency
             ) {
-                submitdOrder(
-                    dca.owner,
-                    dca.amountPerOrder,
-                    dca.tokenIn,
-                    index,
-                    dca.percentageLower
-                );
+                submitdOrder(dca.owner, dca.amountPerOrder, dca.tokenIn, index);
             }
         }
+    }
+
+    /**
+     * @notice helper function to return all DCA positions
+     */
+    function getAllDcaPositions() external view returns (Dca[] memory) {
+        return allDcaPositions;
     }
 
     /**
@@ -337,8 +337,7 @@ contract QYP_DCA {
         address _recipient,
         uint128 _amountPerOrder,
         address _tokenIn,
-        uint256 _dcaIndex,
-        int24 _percentageLower
+        uint256 _dcaIndex
     ) private {
         (, int24 boundary, , ) = grid.slot0();
         // we will place a maker order at the current lower boundary of the grid which corresponds to the best to the current price
@@ -346,12 +345,6 @@ contract QYP_DCA {
             boundary,
             RESOLUTION
         );
-
-        // apply discount if exists
-        // int24 discountedBoundary = calculateDiscount(
-        //     boundaryLower,
-        //     _percentageLower
-        // );
 
         // build the parameters before placing the order
         IMakerOrderManager.PlaceOrderParameters
@@ -377,12 +370,5 @@ contract QYP_DCA {
 
         // emit OrderSubmitted event
         emit OrderSubmitted(_recipient, orderId, _amountPerOrder);
-    }
-
-    function calculateDiscount(
-        int24 _boundaryLower,
-        int24 _percentageLower
-    ) private pure returns (int24) {
-        return ((100 - _percentageLower) * _boundaryLower) / 100;
     }
 }

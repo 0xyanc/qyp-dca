@@ -7,7 +7,7 @@ import { arbitrum, hardhat } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { useState } from "react";
 
-const { chains, provider } = configureChains([arbitrum], [publicProvider()]);
+const { chains, provider } = configureChains([hardhat], [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
   appName: "ODCA",

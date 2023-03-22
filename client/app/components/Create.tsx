@@ -5,16 +5,12 @@ import { ABI_QYP } from "../abi/ABI_QYP";
 import Image from "next/image";
 import change_icon from "../../public/change.png";
 import fleche from "../../public/fleche.png";
-import { SmartContract } from "./Coin/addresses";
+import { SmartContract, USDC_address, WETH9_address } from "./Coin/addresses";
 import USDC from "./Coin/usdc";
 import WETH from "./Coin/weth";
 import { BigNumber, ethers } from "ethers";
 
 export const Create = () => {
-  const WETH9_address: `0x${string}` = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
-  const USDC_address: `0x${string}` = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
-  const USDC_Goerli: `0x${string}` = "0x65afadd39029741b3b8f0756952c74678c9cec93";
-  const WETH_Goerli: `0x${string}` = "0xccb14936c2e000ed8393a571d15a2672537838ad";
   const [isTotal, setIsTotal] = useState(false);
   const [amount, setAmount] = useState("0");
   const [periodAmount, setPeriodAmount] = useState("0");
@@ -60,8 +56,8 @@ export const Create = () => {
       if (isConnected) {
         setWethAllowance(data[2]);
         setUsdcAllowance(data[3]);
-        setUsdcBalance(parseInt(data[0]._hex.toString()) / 10 ** 6);
-        setWethBalance(parseInt(data[1]._hex.toString()) / 10 ** 18);
+        setUsdcBalance(Number(ethers.utils.formatUnits(data[0], 6)));
+        setWethBalance(Number(ethers.utils.formatUnits(data[1], 18)));
       }
     },
   });
@@ -85,26 +81,17 @@ export const Create = () => {
   });
   const { write: write_WETH } = useContractWrite(config_WETH);
 
-  const { config, isError } = usePrepareContractWrite({
+  const { config, error } = usePrepareContractWrite({
     address: SmartContract,
     abi: ABI_QYP,
     functionName: "submitDcaPosition",
     args: [
-      //   parseInt(periodAmount) * parseInt(nbOrder),
-      //   parseInt(periodAmount),
-      //   parseInt(frequency),
-      //   parseInt(nbOrder),
-      //   chosenCoin ? WETH9_address : USDC_address,
-      //   parseInt(percentage),
-      5,
-      1,
-      5,
-      5,
-      USDC_address,
-      0,
+      chosenCoin ? ethers.utils.parseUnits(periodAmount, 18) : ethers.utils.parseUnits(periodAmount, 6),
+      parseInt(frequency),
+      parseInt(nbOrder),
+      chosenCoin ? WETH9_address : USDC_address,
     ],
   });
-  console.log(SmartContract);
   const { write } = useContractWrite(config);
 
   useEffect(() => {
@@ -139,11 +126,9 @@ export const Create = () => {
 
   const calculAmount = () => {
     if (isTotal) {
-      setPeriodAmount(
-        new Intl.NumberFormat("en-US", { maximumSignificantDigits: 5 }).format(parseFloat(amount) / parseInt(nbOrder))
-      );
+      setPeriodAmount((parseFloat(amount) / parseInt(nbOrder)).toString());
     } else {
-      setPeriodAmount(new Intl.NumberFormat("en-US", { maximumSignificantDigits: 5 }).format(parseFloat(amount)));
+      setPeriodAmount(parseFloat(amount).toString());
     }
   };
 

@@ -7,6 +7,11 @@ export const ABI_QYP = [
         type: "address",
       },
       {
+        internalType: "contract IGrid",
+        name: "_grid",
+        type: "address",
+      },
+      {
         internalType: "address",
         name: "_token0",
         type: "address",
@@ -42,11 +47,6 @@ export const ABI_QYP = [
   },
   {
     inputs: [],
-    name: "QYP_DCA__InvalidPercentage",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "QYP_DCA__InvalidToken",
     type: "error",
   },
@@ -68,12 +68,6 @@ export const ABI_QYP = [
         internalType: "address",
         name: "user",
         type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "totalAmount",
-        type: "uint256",
       },
       {
         indexed: false,
@@ -229,9 +223,9 @@ export const ABI_QYP = [
         type: "address",
       },
       {
-        internalType: "int24",
-        name: "percentageLower",
-        type: "int24",
+        internalType: "uint176",
+        name: "index",
+        type: "uint176",
       },
     ],
     stateMutability: "view",
@@ -242,6 +236,71 @@ export const ABI_QYP = [
     name: "dailyOrderSubmission",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllDcaPositions",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "totalAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "amountPerOrder",
+            type: "uint128",
+          },
+          {
+            internalType: "uint256",
+            name: "frequency",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "numberOfOrders",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "creationDate",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "timestampLastSubmittedOrder",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "tokenIn",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
+          {
+            internalType: "uint176",
+            name: "index",
+            type: "uint176",
+          },
+          {
+            internalType: "uint256[]",
+            name: "orderIds",
+            type: "uint256[]",
+          },
+        ],
+        internalType: "struct QYP_DCA.Dca[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -337,11 +396,6 @@ export const ABI_QYP = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "_totalAmount",
-        type: "uint256",
-      },
-      {
         internalType: "uint128",
         name: "_amountPerOrder",
         type: "uint128",
@@ -360,11 +414,6 @@ export const ABI_QYP = [
         internalType: "address",
         name: "_tokenIn",
         type: "address",
-      },
-      {
-        internalType: "int24",
-        name: "_percentageLower",
-        type: "int24",
       },
     ],
     name: "submitDcaPosition",
